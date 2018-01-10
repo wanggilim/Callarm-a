@@ -457,3 +457,12 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.gitignore.io/api/c++,java,macos,kotlin,eclipse,windows,android,intellij,code-java,intellij+all,intellij+iml,androidstudio
+/app/
+app/
+build.gradle
+gradle.properties
+gradle/
+gradlew
+gradlew.bat
+settings.gradle
+!/app/
