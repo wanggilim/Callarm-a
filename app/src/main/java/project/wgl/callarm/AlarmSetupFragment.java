@@ -9,12 +9,15 @@ import android.preference.SwitchPreference;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import java.util.Iterator;
+import java.util.Set;
+
 /**
  * Created by WGL on 2018. 1. 10..
  */
 
 public class AlarmSetupFragment extends PreferenceFragment
-        implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener, SharedPreferences.OnSharedPreferenceChangeListener {
+        implements SharedPreferences.OnSharedPreferenceChangeListener {
     private static final String TAG = "AlarmSetupFragment";
 
     private Alarm alarm;
@@ -23,9 +26,13 @@ public class AlarmSetupFragment extends PreferenceFragment
     private SwitchPreference sp_repeat;
     private Preference p_date;
     private Preference p_day;
+    private Preference p_time;
     private RingtonePreference rp_ringtone;
     private SwitchPreference sp_vibe;
     private Preference p_contact;
+
+    private boolean isRepeat;
+    private String phoneNumber = "";
 
 
     @Override
@@ -41,59 +48,65 @@ public class AlarmSetupFragment extends PreferenceFragment
         sp_repeat = (SwitchPreference) findPreference("key_sp_repeat");
         p_date = findPreference("key_p_date");
         p_day = findPreference("key_p_day");
+        p_time = findPreference("key_p_time");
         rp_ringtone = (RingtonePreference) findPreference("key_rp_ringtone");
         sp_vibe = (SwitchPreference) findPreference("key_sp_vibe");
         p_contact = findPreference("key_p_contact");
 
         // 선택 반영 리스너
         as.registerOnSharedPreferenceChangeListener(this);
-
     }
 
-
-    @Override
-    public boolean onPreferenceChange(Preference preference, Object o) {
-        switch (preference.getKey()) {
-            case "key_sp_repeat":
-                Log.d(TAG, "onPreferenceChange: " + findPreference("key_sp_repeat"));
-                break;
-            case "key_rp_ringtone":
-                Log.d(TAG, "onPreferenceChange: " + findPreference("key_rp_ringtone"));
-                break;
-            case "sp_vibe":
-                Log.d(TAG, "onPreferenceChange: " + findPreference("sp_vibe"));
-                break;
-            default:
-                break;
-        }
-
-        return false;
-    }
-
-    @Override
-    public boolean onPreferenceClick(Preference preference) {
-        switch (preference.getKey()) {
-            case "key_p_date":
-                Log.d(TAG, "onPreferenceClick: key_p_date");
-                break;
-            case "key_p_day":
-                Log.d(TAG, "onPreferenceClick: key_p_day");
-                break;
-            case "key_p_time":
-                Log.d(TAG, "onPreferenceClick: key_p_time");
-                break;
-            case "key_p_contact":
-                Log.d(TAG, "onPreferenceClick: key_p_contact");
-                break;
-            default:
-                break;
-        }
-
-        return false;
-    }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
 
+        if (s.equals("key_sp_repeat")) {
+            Log.d(TAG, "onSharedPreferenceChanged: key_sp_repeat");
+
+            // 알람 반복
+            isRepeat = sharedPreferences.getBoolean(s, false);
+
+            if (isRepeat == true) {
+                p_date.setEnabled(false);
+                p_day.setEnabled(true);
+            } else {
+                p_date.setEnabled(true);
+                p_day.setEnabled(false);
+            }
+        }
+
+        if (s.equals("key_rp_ringtone")) {
+            Log.d(TAG, "onSharedPreferenceChanged: key_rp_ringtone");
+        }
+
+        if (s.equals("sp_vibe")) {
+            Log.d(TAG, "onSharedPreferenceChanged: sp_vibe");
+        }
+
+        if (s.equals("key_p_date")) {
+            Log.d(TAG, "onSharedPreferenceChanged: key_p_date");
+        }
+
+        if (s.equals("key_p_day")) {
+            Log.d(TAG, "onSharedPreferenceChanged: key_p_day");
+        }
+
+        if (s.equals("key_p_time")) {
+            Log.d(TAG, "onSharedPreferenceChanged: key_p_time");
+        }
+
+        if (s.equals("key_p_contact")) {
+            Log.d(TAG, "onSharedPreferenceChanged: key_p_contact");
+        }
+
     }
+
+    @Override
+    public void onDestroy() {
+        as.unregisterOnSharedPreferenceChangeListener(this);
+        as.edit().clear().apply();
+        super.onDestroy();
+    }
+
 }
