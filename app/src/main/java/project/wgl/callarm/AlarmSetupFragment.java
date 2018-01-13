@@ -1,5 +1,6 @@
 package project.wgl.callarm;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
@@ -26,14 +27,16 @@ public class AlarmSetupFragment extends PreferenceFragment
     private SwitchPreference sp_repeat;
     private Preference p_date;
     private Preference p_day;
-    private Preference p_time;
+    private TPDialogPreference p_time;
     private RingtonePreference rp_ringtone;
     private SwitchPreference sp_vibe;
     private Preference p_contact;
 
     private boolean isRepeat;
-    private String phoneNumber = "";
 
+    private int hourOfDay = 0;
+    private int minute = 0;
+    private String phoneNumber = "";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -45,10 +48,12 @@ public class AlarmSetupFragment extends PreferenceFragment
         getPreferenceManager().setSharedPreferencesName("setNewAlarm");
         // 프리퍼런스 선언
         as = getActivity().getSharedPreferences("setNewAlarm", 0);
+        as.edit().clear();
         sp_repeat = (SwitchPreference) findPreference("key_sp_repeat");
         p_date = findPreference("key_p_date");
         p_day = findPreference("key_p_day");
-        p_time = findPreference("key_p_time");
+        p_time = (TPDialogPreference) findPreference("key_p_time");
+
         rp_ringtone = (RingtonePreference) findPreference("key_rp_ringtone");
         sp_vibe = (SwitchPreference) findPreference("key_sp_vibe");
         p_contact = findPreference("key_p_contact");
@@ -56,7 +61,6 @@ public class AlarmSetupFragment extends PreferenceFragment
         // 선택 반영 리스너
         as.registerOnSharedPreferenceChangeListener(this);
     }
-
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
@@ -93,7 +97,7 @@ public class AlarmSetupFragment extends PreferenceFragment
         }
 
         if (s.equals("key_p_time")) {
-            Log.d(TAG, "onSharedPreferenceChanged: key_p_time");
+            Log.d(TAG, "onSharedPreferenceChanged: key_p_time --> " + sharedPreferences.getLong("key_p_time", 0L));
         }
 
         if (s.equals("key_p_contact")) {
@@ -106,7 +110,8 @@ public class AlarmSetupFragment extends PreferenceFragment
     public void onDestroy() {
         as.unregisterOnSharedPreferenceChangeListener(this);
         as.edit().clear().apply();
+
+        p_time.setPersistent(false);
         super.onDestroy();
     }
-
 }

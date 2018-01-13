@@ -29,7 +29,7 @@
     <PreferenceCategory
         android:title="3. 시간 설정">
         <!-- 임의의 Preference 클래스 생성해야함 -->
-        <Preference
+        <project.wgl.callarm.TPDialogPreference
             android:title="시간"
             android:key="key_p_time"
             android:summary="시간을 설정합니다" />
