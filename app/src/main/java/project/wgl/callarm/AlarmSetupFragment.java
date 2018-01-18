@@ -3,13 +3,17 @@ package project.wgl.callarm;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.MultiSelectListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.RingtonePreference;
 import android.preference.SwitchPreference;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -26,7 +30,7 @@ public class AlarmSetupFragment extends PreferenceFragment
     private SharedPreferences as;
     private SwitchPreference sp_repeat;
     private Preference p_date;
-    private Preference p_day;
+    private DayPDialogPreference p_day;
     private TPDialogPreference p_time;
     private RingtonePreference rp_ringtone;
     private SwitchPreference sp_vibe;
@@ -34,9 +38,9 @@ public class AlarmSetupFragment extends PreferenceFragment
 
     private boolean isRepeat;
 
-    private int hourOfDay = 0;
-    private int minute = 0;
     private String phoneNumber = "";
+
+    private Set<String> ex_daySet;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,7 +55,8 @@ public class AlarmSetupFragment extends PreferenceFragment
         as.edit().clear();
         sp_repeat = (SwitchPreference) findPreference("key_sp_repeat");
         p_date = findPreference("key_p_date");
-        p_day = findPreference("key_p_day");
+        p_day = (DayPDialogPreference) findPreference("key_p_day");
+        ex_daySet = getPreferenceManager().getSharedPreferences().getStringSet(p_day.getKey(), null);
         p_time = (TPDialogPreference) findPreference("key_p_time");
 
         rp_ringtone = (RingtonePreference) findPreference("key_rp_ringtone");
@@ -72,11 +77,15 @@ public class AlarmSetupFragment extends PreferenceFragment
             isRepeat = sharedPreferences.getBoolean(s, false);
 
             if (isRepeat == true) {
+                Log.d(TAG, "onSharedPreferenceChanged: isRepeat " + isRepeat);
+                // 요일 선택
                 p_date.setEnabled(false);
                 p_day.setEnabled(true);
             } else {
-                p_date.setEnabled(true);
+                Log.d(TAG, "onSharedPreferenceChanged: isRepeat " + isRepeat);
+                // 날짜 선택
                 p_day.setEnabled(false);
+                p_date.setEnabled(true);
             }
         }
 
