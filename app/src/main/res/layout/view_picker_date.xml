@@ -38,11 +38,13 @@
                     android:layout_height="match_parent" />
 
                 <Button
-                    android:id="@+id/btn_dp_select"
-                    android:text="날짜 선택"
+                    android:id="@+id/btn_dp_next_week"
+                    android:text="다음주"
                     android:layout_weight="1"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
+
+
             </LinearLayout>
 
         </LinearLayout>
