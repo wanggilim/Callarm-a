@@ -86,12 +86,43 @@ public class TPDialogPreference extends DialogPreference
             Calendar calendar = Calendar.getInstance();
             calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
             calendar.set(Calendar.MINUTE, minute);
+            calendar.set(Calendar.MILLISECOND, 0);
             timeInMillis = calendar.getTimeInMillis();
 
             setPersistent(true);
             persistLong(timeInMillis);
 
-            setSummary(hourOfDay + ":" + minute);
+            String str_ampm = "";
+            if (calendar.get(Calendar.AM_PM) == Calendar.AM) {
+                str_ampm = "오전 ";
+            } else {
+                str_ampm = "오후 ";
+            }
+
+            // 시간 (12시간제 표기)
+            String str_hour = "";
+            if (hourOfDay < 10) {
+                str_hour = "0" + String.valueOf(calendar.get(Calendar.HOUR));
+            } else if (hourOfDay >= 10 && hourOfDay <= 12) {
+                str_hour = String.valueOf(hourOfDay);
+            } else if (hourOfDay > 12 && hourOfDay < 22) {
+                str_hour = "0" + String.valueOf(hourOfDay - 12);
+            } else {
+                str_hour = String.valueOf(hourOfDay - 12);
+            }
+
+
+
+            // 분
+            String str_minute = "";
+            if (minute < 10) {
+                str_minute = "0" + String.valueOf(minute);
+            } else {
+                str_minute = String.valueOf(minute);
+            }
+
+            // 12시간제 표기 결과
+            setSummary(str_ampm + str_hour + ":" + str_minute);
 
             Log.d(TAG, "onDialogClosed: getTimeInMillis = " + timeInMillis);
         }

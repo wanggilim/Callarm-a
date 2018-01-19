@@ -66,6 +66,7 @@ public class AlarmSetupFragment extends PreferenceFragment
         p_day = (DayPDialogPreference) findPreference("key_p_day");
         ex_daySet = getPreferenceManager().getSharedPreferences().getStringSet(p_day.getKey(), null);
         p_time = (TPDialogPreference) findPreference("key_p_time");
+        p_time.setPersistent(false);
 
         rp_ringtone = (RingtonePreference) findPreference("key_rp_ringtone");
         sp_vibe = (SwitchPreference) findPreference("key_sp_vibe");
@@ -139,6 +140,7 @@ public class AlarmSetupFragment extends PreferenceFragment
 
         p_time.setPersistent(false);
         p_date.setPersistent(false);
+        p_day.setPersistent(false);
         super.onDestroy();
     }
 
