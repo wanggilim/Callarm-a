@@ -45,7 +45,7 @@
         <RingtonePreference
             android:key="key_rp_ringtone"
             android:title="소리 선택"
-            android:ringtoneType="alarm"
+            android:ringtoneType="all"
             android:summary="알람 벨소리를 선택합니다"/>
         <SwitchPreference
             android:id="@+id/sp_vibe"

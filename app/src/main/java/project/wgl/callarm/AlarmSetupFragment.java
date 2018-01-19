@@ -1,8 +1,10 @@
 package project.wgl.callarm;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.preference.MultiSelectListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -25,6 +27,8 @@ public class AlarmSetupFragment extends PreferenceFragment
         implements SharedPreferences.OnSharedPreferenceChangeListener {
     private static final String TAG = "AlarmSetupFragment";
 
+    private Context context;
+
     private Alarm alarm;
 
     private SharedPreferences as;
@@ -34,6 +38,7 @@ public class AlarmSetupFragment extends PreferenceFragment
     private TPDialogPreference p_time;
     private RingtonePreference rp_ringtone;
     private SwitchPreference sp_vibe;
+    private boolean isVibe;
     private Preference p_contact;
 
     private boolean isRepeat;
@@ -46,6 +51,8 @@ public class AlarmSetupFragment extends PreferenceFragment
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.layout_alarm_setup);
+        context = getActivity().getBaseContext();
+
         alarm = new Alarm();
 
         // 프리퍼런스 생성
@@ -61,6 +68,7 @@ public class AlarmSetupFragment extends PreferenceFragment
 
         rp_ringtone = (RingtonePreference) findPreference("key_rp_ringtone");
         sp_vibe = (SwitchPreference) findPreference("key_sp_vibe");
+        isVibe = true; // 진동 기본값
         p_contact = findPreference("key_p_contact");
 
         // 선택 반영 리스너
@@ -93,8 +101,16 @@ public class AlarmSetupFragment extends PreferenceFragment
             Log.d(TAG, "onSharedPreferenceChanged: key_rp_ringtone");
         }
 
-        if (s.equals("sp_vibe")) {
+        if (s.equals("key_sp_vibe")) {
             Log.d(TAG, "onSharedPreferenceChanged: sp_vibe");
+            final Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+            isVibe = !isVibe;
+            if (!isVibe) {
+                vibrator.cancel();
+            } else {
+                vibrator.vibrate(500);
+            }
+
         }
 
         if (s.equals("key_p_date")) {
@@ -123,4 +139,6 @@ public class AlarmSetupFragment extends PreferenceFragment
         p_time.setPersistent(false);
         super.onDestroy();
     }
+
+
 }

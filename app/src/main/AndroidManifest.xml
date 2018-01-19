@@ -21,8 +21,10 @@
 
         <activity android:name=".AlarmSetupActivity"/>
         <!-- End -->
-
-
+        
     </application>
+
+    <uses-permission-sdk-23 android:name="android.permission.VIBRATE"/>
+    <permission android:name="android.permission.VIBRATE"/>
 
 </manifest>
