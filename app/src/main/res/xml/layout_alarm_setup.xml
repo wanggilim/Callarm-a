@@ -15,7 +15,7 @@
 
         android:title="2. 날짜 / 요일 선택">
         <!-- 임의의 Preference 클래스 생성해야함 -->
-        <Preference
+        <project.wgl.callarm.DatePDialogPreference
             android:enabled="false"
             android:title="날짜"
             android:summary="날짜를 설정합니다"

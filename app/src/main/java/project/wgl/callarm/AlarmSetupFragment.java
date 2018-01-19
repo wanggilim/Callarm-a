@@ -33,7 +33,7 @@ public class AlarmSetupFragment extends PreferenceFragment
 
     private SharedPreferences as;
     private SwitchPreference sp_repeat;
-    private Preference p_date;
+    private DatePDialogPreference p_date;
     private DayPDialogPreference p_day;
     private TPDialogPreference p_time;
     private RingtonePreference rp_ringtone;
@@ -61,7 +61,8 @@ public class AlarmSetupFragment extends PreferenceFragment
         as = getActivity().getSharedPreferences("setNewAlarm", 0);
         as.edit().clear();
         sp_repeat = (SwitchPreference) findPreference("key_sp_repeat");
-        p_date = findPreference("key_p_date");
+        p_date = (DatePDialogPreference) findPreference("key_p_date");
+        p_date.setPersistent(false);
         p_day = (DayPDialogPreference) findPreference("key_p_day");
         ex_daySet = getPreferenceManager().getSharedPreferences().getStringSet(p_day.getKey(), null);
         p_time = (TPDialogPreference) findPreference("key_p_time");
@@ -137,6 +138,7 @@ public class AlarmSetupFragment extends PreferenceFragment
         as.edit().clear().apply();
 
         p_time.setPersistent(false);
+        p_date.setPersistent(false);
         super.onDestroy();
     }
 
