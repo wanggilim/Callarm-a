@@ -8,6 +8,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.Toast;
 
@@ -17,7 +18,7 @@ import java.util.Calendar;
  * Created by WGL on 2018. 1. 19..
  */
 
-public class DatePDialogPreference extends DialogPreference implements DatePicker.OnDateChangedListener {
+public class DatePDialogPreference extends DialogPreference implements DatePicker.OnDateChangedListener, View.OnClickListener {
     private final static String TAG = "DatePDialogPreference";
     private Context context;
     private DatePDialogHolder holder;
@@ -74,6 +75,12 @@ public class DatePDialogPreference extends DialogPreference implements DatePicke
     protected void onPrepareDialogBuilder(AlertDialog.Builder builder) {
         View view = LayoutInflater.from(context).inflate(R.layout.view_picker_date, null);
         holder.dp = (DatePicker) view.findViewById(R.id.dp);
+        holder.btn_dp_today = (Button) view.findViewById(R.id.btn_dp_today);
+        holder.btn_dp_today.setOnClickListener(this);
+        holder.btn_dp_tomorrow = (Button) view.findViewById(R.id.btn_dp_tomorrow);
+        holder.btn_dp_tomorrow.setOnClickListener(this);
+        holder.btn_btn_dp_select = (Button) view.findViewById(R.id.btn_dp_select);
+        holder.btn_btn_dp_select.setOnClickListener(this);
 
         initCalendar();
         setTime(getCalendar().getTimeInMillis());
@@ -140,8 +147,42 @@ public class DatePDialogPreference extends DialogPreference implements DatePicke
         Log.d(TAG, "onDateChanged: " + year + "/" + monthOfYear + "/" + dayOfMonth);
         setTime(year, monthOfYear, dayOfMonth);
     }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btn_dp_today:
+                initCalendar();
+                setTime(getCalendar().getTimeInMillis());
+                holder.dp.setMinDate(getTime());
+                holder.dp.updateDate(getCalendar().get(Calendar.YEAR),
+                        getCalendar().get(Calendar.MONTH),
+                        getCalendar().get(Calendar.DAY_OF_MONTH));
+                break;
+
+            case R.id.btn_dp_tomorrow:
+                initCalendar();
+                Calendar calendar = getCalendar();
+                holder.dp.setMinDate(calendar.getTimeInMillis());
+                calendar.add(Calendar.MILLISECOND, 1000*86400);
+                holder.dp.updateDate(getCalendar().get(Calendar.YEAR),
+                        getCalendar().get(Calendar.MONTH),
+                        getCalendar().get(Calendar.DAY_OF_MONTH));
+                break;
+
+            case R.id.btn_dp_select:
+                break;
+
+            default:
+                break;
+        }
+
+    }
 }
 
 class DatePDialogHolder {
     DatePicker dp;
+    Button btn_dp_today;
+    Button btn_dp_tomorrow;
+    Button btn_btn_dp_select;
 }
