@@ -69,6 +69,7 @@ public class AlarmSetupFragment extends PreferenceFragment
 
         rp_ringtone = (RingtonePreference) findPreference("key_rp_ringtone");
         sp_vibe = (SwitchPreference) findPreference("key_sp_vibe");
+        sp_vibe.setOnPreferenceClickListener(this);
         isVibe = true; // 진동 기본값
         p_contact = findPreference("key_p_contact");
 
@@ -81,18 +82,6 @@ public class AlarmSetupFragment extends PreferenceFragment
 
         if (s.equals("key_rp_ringtone")) {
             Log.d(TAG, "onSharedPreferenceChanged: key_rp_ringtone");
-        }
-
-        if (s.equals("key_sp_vibe")) {
-            Log.d(TAG, "onSharedPreferenceChanged: sp_vibe");
-            final Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-            isVibe = !isVibe;
-            if (!isVibe) {
-                vibrator.cancel();
-            } else {
-                vibrator.vibrate(500);
-            }
-
         }
 
         if (s.equals("key_p_date")) {
@@ -115,6 +104,7 @@ public class AlarmSetupFragment extends PreferenceFragment
 
     @Override
     public boolean onPreferenceClick(Preference preference) {
+        Log.d(TAG, "onPreferenceClick: ");
         switch (preference.getKey().toString()) {
             case "key_sp_repeat":
                 Log.d(TAG, "onPreferenceClick: ");
@@ -131,6 +121,17 @@ public class AlarmSetupFragment extends PreferenceFragment
                     // 날짜 선택
                     p_day.setEnabled(false);
                     p_date.setEnabled(true);
+                }
+                break;
+
+            case "key_sp_vibe":
+                Log.d(TAG, "onPreferenceClick: sp_vibe");
+                final Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+                isVibe = !isVibe;
+                if (!isVibe) {
+                    vibrator.cancel();
+                } else {
+                    vibrator.vibrate(500);
                 }
                 break;
 
