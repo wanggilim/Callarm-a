@@ -24,14 +24,13 @@ import java.util.Set;
  */
 
 public class AlarmSetupFragment extends PreferenceFragment
-        implements SharedPreferences.OnSharedPreferenceChangeListener {
+        implements SharedPreferences.OnSharedPreferenceChangeListener, Preference.OnPreferenceClickListener {
     private static final String TAG = "AlarmSetupFragment";
 
     private Context context;
 
     private Alarm alarm;
 
-    private SharedPreferences as;
     private SwitchPreference sp_repeat;
     private DatePDialogPreference p_date;
     private DayPDialogPreference p_day;
@@ -41,7 +40,7 @@ public class AlarmSetupFragment extends PreferenceFragment
     private boolean isVibe;
     private Preference p_contact;
 
-    private boolean isRepeat;
+    private boolean isRepeat; // 알람 반복 유무
 
     private String phoneNumber = "";
 
@@ -49,6 +48,7 @@ public class AlarmSetupFragment extends PreferenceFragment
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate: ");
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.layout_alarm_setup);
         context = getActivity().getBaseContext();
@@ -58,9 +58,8 @@ public class AlarmSetupFragment extends PreferenceFragment
         // 프리퍼런스 생성
         getPreferenceManager().setSharedPreferencesName("setNewAlarm");
         // 프리퍼런스 선언
-        as = getActivity().getSharedPreferences("setNewAlarm", 0);
-        as.edit().clear();
         sp_repeat = (SwitchPreference) findPreference("key_sp_repeat");
+        sp_repeat.setOnPreferenceClickListener(this);
         p_date = (DatePDialogPreference) findPreference("key_p_date");
         p_date.setPersistent(false);
         p_day = (DayPDialogPreference) findPreference("key_p_day");
@@ -74,30 +73,11 @@ public class AlarmSetupFragment extends PreferenceFragment
         p_contact = findPreference("key_p_contact");
 
         // 선택 반영 리스너
-        as.registerOnSharedPreferenceChangeListener(this);
+        getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-
-        if (s.equals("key_sp_repeat")) {
-            Log.d(TAG, "onSharedPreferenceChanged: key_sp_repeat");
-
-            // 알람 반복
-            isRepeat = sharedPreferences.getBoolean(s, false);
-
-            if (isRepeat == true) {
-                Log.d(TAG, "onSharedPreferenceChanged: isRepeat " + isRepeat);
-                // 요일 선택
-                p_date.setEnabled(false);
-                p_day.setEnabled(true);
-            } else {
-                Log.d(TAG, "onSharedPreferenceChanged: isRepeat " + isRepeat);
-                // 날짜 선택
-                p_day.setEnabled(false);
-                p_date.setEnabled(true);
-            }
-        }
 
         if (s.equals("key_rp_ringtone")) {
             Log.d(TAG, "onSharedPreferenceChanged: key_rp_ringtone");
@@ -134,15 +114,54 @@ public class AlarmSetupFragment extends PreferenceFragment
     }
 
     @Override
+    public boolean onPreferenceClick(Preference preference) {
+        switch (preference.getKey().toString()) {
+            case "key_sp_repeat":
+                Log.d(TAG, "onPreferenceClick: ");
+                // 알람 반복
+                isRepeat = getPreferenceManager().getSharedPreferences().getBoolean(preference.getKey().toString(), true);
+
+                if (isRepeat == true) {
+                    Log.d(TAG, "onPreferenceClick: isRepeat " + isRepeat);
+                    // 요일 선택
+                    p_date.setEnabled(false);
+                    p_day.setEnabled(true);
+                } else {
+                    Log.d(TAG, "onPreferenceClick: isRepeat " + isRepeat);
+                    // 날짜 선택
+                    p_day.setEnabled(false);
+                    p_date.setEnabled(true);
+                }
+                break;
+
+            default:
+                break;
+        }
+
+
+        return false;
+    }
+
+
+    @Override
+    public void onResume() {
+        getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+        super.onPause();
+    }
+
+    @Override
     public void onDestroy() {
-        as.unregisterOnSharedPreferenceChangeListener(this);
-        as.edit().clear().apply();
+        getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
 
         p_time.setPersistent(false);
         p_date.setPersistent(false);
         p_day.setPersistent(false);
         super.onDestroy();
     }
-
-
 }

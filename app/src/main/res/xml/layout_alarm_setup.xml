@@ -7,6 +7,7 @@
             android:title="반복 설정 유/무"
             android:summaryOn="아래 설정된 사항에 맞춰 반복됩니다"
             android:summaryOff="1회용 알람으로 설정됩니다"
+            android:defaultValue="true"
             android:id="@+id/sp_repeat"
             android:key="key_sp_repeat"/>
     </PreferenceCategory>
