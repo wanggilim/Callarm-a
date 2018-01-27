@@ -23,7 +23,7 @@ public class AlarmSetupActivity extends PreferenceActivity {
         setContentView(R.layout.activity_alarm_setup);
 
         getFragmentManager().beginTransaction()
-                .addToBackStack(null)
+                .addToBackStack("AlarmSetupFragment")
                 .replace(R.id.fragment_alarm_setup, new AlarmSetupFragment())
                 .commit();
     }
@@ -32,5 +32,12 @@ public class AlarmSetupActivity extends PreferenceActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(TAG, "onActivityResult: ");
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onBackPressed() {
+        getFragmentManager().popBackStack();
+        Log.d(TAG, "onBackPressed: ");
+        super.onBackPressed();
     }
 }

@@ -3,6 +3,9 @@ package project.wgl.callarm;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.preference.MultiSelectListPreference;
@@ -16,6 +19,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -24,12 +28,14 @@ import java.util.Set;
  */
 
 public class AlarmSetupFragment extends PreferenceFragment
-        implements SharedPreferences.OnSharedPreferenceChangeListener, Preference.OnPreferenceClickListener {
+        implements SharedPreferences.OnSharedPreferenceChangeListener, Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener {
     private static final String TAG = "AlarmSetupFragment";
 
     private Context context;
 
     private Alarm alarm;
+
+    private SharedPreferences as;
 
     private SwitchPreference sp_repeat;
     private DatePDialogPreference p_date;
@@ -56,7 +62,8 @@ public class AlarmSetupFragment extends PreferenceFragment
         alarm = new Alarm();
 
         // 프리퍼런스 생성
-        getPreferenceManager().setSharedPreferencesName("setNewAlarm");
+        //getPreferenceManager().setSharedPreferencesName("setNewAlarm");
+        as = context.getSharedPreferences("setNewAlarm", 0);
         // 프리퍼런스 선언
         sp_repeat = (SwitchPreference) findPreference("key_sp_repeat");
         sp_repeat.setOnPreferenceClickListener(this);
@@ -68,21 +75,19 @@ public class AlarmSetupFragment extends PreferenceFragment
         p_time.setPersistent(false);
 
         rp_ringtone = (RingtonePreference) findPreference("key_rp_ringtone");
+        rp_ringtone.setOnPreferenceChangeListener(this);
         sp_vibe = (SwitchPreference) findPreference("key_sp_vibe");
         sp_vibe.setOnPreferenceClickListener(this);
         isVibe = true; // 진동 기본값
         p_contact = findPreference("key_p_contact");
 
         // 선택 반영 리스너
-        getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+        //getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+        as.registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-
-        if (s.equals("key_rp_ringtone")) {
-            Log.d(TAG, "onSharedPreferenceChanged: key_rp_ringtone");
-        }
 
         if (s.equals("key_p_date")) {
             Log.d(TAG, "onSharedPreferenceChanged: key_p_date");
@@ -104,7 +109,6 @@ public class AlarmSetupFragment extends PreferenceFragment
 
     @Override
     public boolean onPreferenceClick(Preference preference) {
-        Log.d(TAG, "onPreferenceClick: ");
         switch (preference.getKey().toString()) {
             case "key_sp_repeat":
                 Log.d(TAG, "onPreferenceClick: ");
@@ -143,26 +147,51 @@ public class AlarmSetupFragment extends PreferenceFragment
         return false;
     }
 
+    @Override
+    public boolean onPreferenceChange(Preference preference, Object newValue) {
+        switch (preference.getKey().toString()) {
+            case "key_rp_ringtone":
+                Log.d(TAG, "onPreferenceChange: " + newValue.toString());
+                Uri uri = Uri.parse(newValue.toString());
+                Ringtone ringtone = RingtoneManager.getRingtone(context, uri);
+                rp_ringtone.setSummary(ringtone.getTitle(context));
+
+                break;
+        }
+
+        return true;
+    }
+
 
     @Override
     public void onResume() {
-        getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+        Log.d(TAG, "onResume: ");
+        //getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+        as.registerOnSharedPreferenceChangeListener(this);
         super.onResume();
     }
 
     @Override
     public void onPause() {
-        getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+        Log.d(TAG, "onPause: ");
+        //getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+        as.unregisterOnSharedPreferenceChangeListener(this);
         super.onPause();
     }
 
     @Override
     public void onDestroy() {
-        getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
-
+        Log.d(TAG, "onDestroy: ");
         p_time.setPersistent(false);
         p_date.setPersistent(false);
         p_day.setPersistent(false);
+        rp_ringtone.setPersistent(false);
+        rp_ringtone.getPreferenceManager().getSharedPreferences().edit().clear().apply();
+
+        //getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+        as.unregisterOnSharedPreferenceChangeListener(this);
+
         super.onDestroy();
     }
+
 }
