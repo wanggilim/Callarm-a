@@ -41,11 +41,10 @@ public class AlarmSetupFragment extends PreferenceFragment
     private DatePDialogPreference p_date;
     private DayPDialogPreference p_day;
     private TPDialogPreference p_time;
-    //private RingtonePreference rp_ringtone;
     private RPDialogPreference rp_ringtone;
     private SwitchPreference sp_vibe;
     private boolean isVibe;
-    private Preference p_contact;
+    private CPDialogPreference p_contact;
 
     private boolean isRepeat; // 알람 반복 유무
 
@@ -85,7 +84,8 @@ public class AlarmSetupFragment extends PreferenceFragment
         sp_vibe = (SwitchPreference) findPreference("key_sp_vibe");
         sp_vibe.setOnPreferenceClickListener(this);
         isVibe = true; // 진동 기본값
-        p_contact = findPreference("key_p_contact");
+        p_contact = (CPDialogPreference) findPreference("key_p_contact");
+        p_contact.setOnPreferenceChangeListener(this);
 
         // 선택 반영 리스너
         //getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
@@ -105,10 +105,6 @@ public class AlarmSetupFragment extends PreferenceFragment
 
         if (s.equals("key_p_time")) {
             Log.d(TAG, "onSharedPreferenceChanged: key_p_time --> " + sharedPreferences.getLong("key_p_time", 0L));
-        }
-
-        if (s.equals("key_p_contact")) {
-            Log.d(TAG, "onSharedPreferenceChanged: key_p_contact");
         }
 
     }
@@ -165,6 +161,12 @@ public class AlarmSetupFragment extends PreferenceFragment
                 rp_ringtone.setSummary(ringtone.getTitle(context));
 
                 break;
+
+            case "key_p_contact":
+                preference.setPersistent(true);
+                Log.d(TAG, "onPreferenceChange: key_p_contact --> " + newValue.toString());
+                p_contact.setSummary(newValue.toString());
+                break;
         }
 
         return true;
@@ -195,6 +197,7 @@ public class AlarmSetupFragment extends PreferenceFragment
         p_day.setPersistent(false);
         rp_ringtone.setPersistent(false);
         rp_ringtone.getPreferenceManager().getSharedPreferences().edit().clear().apply();
+        p_contact.setPersistent(false);
 
         //getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
         as.unregisterOnSharedPreferenceChangeListener(this);

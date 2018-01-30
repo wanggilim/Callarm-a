@@ -25,7 +25,10 @@
     </application>
 
     <permission android:name="android.permission.VIBRATE"/>
+    <permission android:name="android.permission.READ_CONTACTS"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS"/>
     <uses-permission-sdk-23 android:name="android.permission.VIBRATE"/>
+    <uses-permission-sdk-23 android:name="android.permission.READ_CONTACTS"/>
 
 </manifest>
