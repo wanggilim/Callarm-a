@@ -163,9 +163,10 @@ public class AlarmSetupFragment extends PreferenceFragment
                 break;
 
             case "key_p_contact":
-                preference.setPersistent(true);
-                Log.d(TAG, "onPreferenceChange: key_p_contact --> " + newValue.toString());
-                p_contact.setSummary(newValue.toString());
+                int index = p_contact.findIndexOfValue(newValue.toString());
+                CharSequence name = p_contact.getEntries()[index];
+                p_contact.setSummary(name.toString() + " (" + newValue.toString() + ")");
+
                 break;
         }
 
