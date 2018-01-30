@@ -43,10 +43,11 @@
     <PreferenceCategory
         android:title="4. 소리/진동 설정">
 
-        <RingtonePreference
+        <project.wgl.callarm.RPDialogPreference
             android:key="key_rp_ringtone"
             android:title="소리 선택"
             android:ringtoneType="all"
+            android:persistent="false"
             android:summary="알람 벨소리를 선택합니다"/>
         <SwitchPreference
             android:id="@+id/sp_vibe"

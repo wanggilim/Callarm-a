@@ -41,7 +41,8 @@ public class AlarmSetupFragment extends PreferenceFragment
     private DatePDialogPreference p_date;
     private DayPDialogPreference p_day;
     private TPDialogPreference p_time;
-    private RingtonePreference rp_ringtone;
+    //private RingtonePreference rp_ringtone;
+    private RPDialogPreference rp_ringtone;
     private SwitchPreference sp_vibe;
     private boolean isVibe;
     private Preference p_contact;
@@ -74,8 +75,13 @@ public class AlarmSetupFragment extends PreferenceFragment
         p_time = (TPDialogPreference) findPreference("key_p_time");
         p_time.setPersistent(false);
 
-        rp_ringtone = (RingtonePreference) findPreference("key_rp_ringtone");
+        //rp_ringtone = (RingtonePreference) findPreference("key_rp_ringtone");
+        rp_ringtone = (RPDialogPreference) findPreference("key_rp_ringtone");
         rp_ringtone.setOnPreferenceChangeListener(this);
+        Uri ringtoneUri = Uri.parse(as.getString(rp_ringtone.getKey(),""));
+        RingtoneManager manager = new RingtoneManager(context);
+        Log.d(TAG, "onRestoreRingtone: " + manager.getRingtone(context, ringtoneUri).getTitle(context));
+
         sp_vibe = (SwitchPreference) findPreference("key_sp_vibe");
         sp_vibe.setOnPreferenceClickListener(this);
         isVibe = true; // 진동 기본값
@@ -151,7 +157,9 @@ public class AlarmSetupFragment extends PreferenceFragment
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         switch (preference.getKey().toString()) {
             case "key_rp_ringtone":
+                preference.setPersistent(true);
                 Log.d(TAG, "onPreferenceChange: " + newValue.toString());
+                preference.setDefaultValue(newValue.toString());
                 Uri uri = Uri.parse(newValue.toString());
                 Ringtone ringtone = RingtoneManager.getRingtone(context, uri);
                 rp_ringtone.setSummary(ringtone.getTitle(context));

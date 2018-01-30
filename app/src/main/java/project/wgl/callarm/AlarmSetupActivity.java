@@ -17,7 +17,7 @@ public class AlarmSetupActivity extends PreferenceActivity {
     private static final String TAG = "AlarmSetupActivity";
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate: ");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alarm_setup);
