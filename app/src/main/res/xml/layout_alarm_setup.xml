@@ -72,6 +72,12 @@
             android:positiveButtonText="설정"
             android:negativeButtonText="닫기"/>
 
+        <project.wgl.callarm.SPDialogPreference
+            android:key="key_mp_check"
+            android:title="전화 / 문자 선택 및 설정"
+            android:enabled="false"
+            android:persistent="false"/>
+
     </PreferenceCategory>
 
 </PreferenceScreen>

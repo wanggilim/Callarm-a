@@ -8,6 +8,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.preference.CheckBoxPreference;
 import android.preference.MultiSelectListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -45,6 +46,7 @@ public class AlarmSetupFragment extends PreferenceFragment
     private SwitchPreference sp_vibe;
     private boolean isVibe;
     private CPDialogPreference p_contact;
+    private SPDialogPreference p_spCheck;
 
     private boolean isRepeat; // 알람 반복 유무
 
@@ -86,6 +88,9 @@ public class AlarmSetupFragment extends PreferenceFragment
         isVibe = true; // 진동 기본값
         p_contact = (CPDialogPreference) findPreference("key_p_contact");
         p_contact.setOnPreferenceChangeListener(this);
+
+        p_spCheck = (SPDialogPreference) findPreference("key_mp_check");
+        p_spCheck.setOnPreferenceChangeListener(this);
 
         // 선택 반영 리스너
         //getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
@@ -166,7 +171,7 @@ public class AlarmSetupFragment extends PreferenceFragment
                 int index = p_contact.findIndexOfValue(newValue.toString());
                 CharSequence name = p_contact.getEntries()[index];
                 p_contact.setSummary(name.toString() + " (" + newValue.toString() + ")");
-
+                p_spCheck.setEnabled(true); // 문자 전화 선택 활성화
                 break;
         }
 
@@ -199,6 +204,7 @@ public class AlarmSetupFragment extends PreferenceFragment
         rp_ringtone.setPersistent(false);
         rp_ringtone.getPreferenceManager().getSharedPreferences().edit().clear().apply();
         p_contact.setPersistent(false);
+        p_spCheck.setPersistent(false);
 
         //getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
         as.unregisterOnSharedPreferenceChangeListener(this);
