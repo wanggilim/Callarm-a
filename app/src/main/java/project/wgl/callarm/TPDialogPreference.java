@@ -66,6 +66,12 @@ public class TPDialogPreference extends DialogPreference
 
         } else {
             Log.d(TAG, "onPrepareDialogBuilder: ! isPersistent()");
+            Calendar calendar = Calendar.getInstance();
+            hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
+            minute = calendar.get(Calendar.MINUTE);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+            timeInMillis = calendar.getTimeInMillis();
         }
 
         super.onPrepareDialogBuilder(builder);
@@ -86,6 +92,7 @@ public class TPDialogPreference extends DialogPreference
             Calendar calendar = Calendar.getInstance();
             calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
             calendar.set(Calendar.MINUTE, minute);
+            calendar.set(Calendar.SECOND, 0);
             calendar.set(Calendar.MILLISECOND, 0);
             timeInMillis = calendar.getTimeInMillis();
 
