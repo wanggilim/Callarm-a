@@ -47,6 +47,7 @@ public class AlarmSetupFragment extends PreferenceFragment
     private boolean isVibe;
     private CPDialogPreference p_contact;
     private SPDialogPreference p_spCheck;
+    private RVDialogPreference p_rv;
 
     private boolean isRepeat; // 알람 반복 유무
 
@@ -91,6 +92,9 @@ public class AlarmSetupFragment extends PreferenceFragment
 
         p_spCheck = (SPDialogPreference) findPreference("key_mp_check");
         p_spCheck.setOnPreferenceChangeListener(this);
+
+        p_rv = (RVDialogPreference) findPreference("key_rv");
+        p_rv.setOnPreferenceChangeListener(this);
 
         // 선택 반영 리스너
         //getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
@@ -205,6 +209,7 @@ public class AlarmSetupFragment extends PreferenceFragment
         rp_ringtone.getPreferenceManager().getSharedPreferences().edit().clear().apply();
         p_contact.setPersistent(false);
         p_spCheck.setPersistent(false);
+        p_rv.setPersistent(false);
 
         //getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
         as.unregisterOnSharedPreferenceChangeListener(this);

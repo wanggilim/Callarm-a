@@ -49,6 +49,12 @@
             android:ringtoneType="all"
             android:persistent="false"
             android:summary="알람 벨소리를 선택합니다"/>
+
+        <project.wgl.callarm.RVDialogPreference
+            android:key="key_rv"
+            android:title="알람 볼륨/증감 조절"
+            android:persistent="false"/>
+
         <SwitchPreference
             android:id="@+id/sp_vibe"
             android:key="key_sp_vibe"
