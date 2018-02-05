@@ -29,7 +29,7 @@ import java.util.Set;
  */
 
 public class AlarmSetupFragment extends PreferenceFragment
-        implements SharedPreferences.OnSharedPreferenceChangeListener, Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener {
+        implements SharedPreferences.OnSharedPreferenceChangeListener, Preference.OnPreferenceChangeListener {
     private static final String TAG = "AlarmSetupFragment";
 
     private Context context;
@@ -69,11 +69,21 @@ public class AlarmSetupFragment extends PreferenceFragment
         as = context.getSharedPreferences("setNewAlarm", 0);
         // 프리퍼런스 선언
         sp_repeat = (SwitchPreference) findPreference("key_sp_repeat");
-        sp_repeat.setOnPreferenceClickListener(this);
+        sp_repeat.setOnPreferenceChangeListener(this);
+        /**
+         * TODO
+         * 설정 알람에 대한 반복 설정 가져오기
+         */
+        isRepeat = true; // 반복 여부 기본값, 여기와
+        sp_repeat.setChecked(true); // 여기까지
+
         p_date = (DatePDialogPreference) findPreference("key_p_date");
         p_date.setPersistent(false);
+
         p_day = (DayPDialogPreference) findPreference("key_p_day");
+
         ex_daySet = getPreferenceManager().getSharedPreferences().getStringSet(p_day.getKey(), null);
+
         p_time = (TPDialogPreference) findPreference("key_p_time");
         p_time.setPersistent(false);
 
@@ -85,8 +95,14 @@ public class AlarmSetupFragment extends PreferenceFragment
         Log.d(TAG, "onRestoreRingtone: " + manager.getRingtone(context, ringtoneUri).getTitle(context));
 
         sp_vibe = (SwitchPreference) findPreference("key_sp_vibe");
-        sp_vibe.setOnPreferenceClickListener(this);
-        isVibe = true; // 진동 기본값
+        sp_vibe.setOnPreferenceChangeListener(this);
+        /**
+         * TODO
+         * 설정 알람에 대한 반복 설정 가져오기
+         */
+        isVibe = true; // 진동 기본값, 여기와
+        sp_vibe.setChecked(true); // 여기까지
+
         p_contact = (CPDialogPreference) findPreference("key_p_contact");
         p_contact.setOnPreferenceChangeListener(this);
 
@@ -103,7 +119,8 @@ public class AlarmSetupFragment extends PreferenceFragment
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-
+        Log.d(TAG, "onSharedPreferenceChanged: ");
+        
         if (s.equals("key_p_date")) {
             Log.d(TAG, "onSharedPreferenceChanged: key_p_date");
         }
@@ -119,48 +136,26 @@ public class AlarmSetupFragment extends PreferenceFragment
     }
 
     @Override
-    public boolean onPreferenceClick(Preference preference) {
+    public boolean onPreferenceChange(Preference preference, Object newValue) {
+
         switch (preference.getKey().toString()) {
             case "key_sp_repeat":
-                Log.d(TAG, "onPreferenceClick: ");
-                // 알람 반복
-                isRepeat = getPreferenceManager().getSharedPreferences().getBoolean(preference.getKey().toString(), true);
+                //isRepeat = getPreferenceManager().getSharedPreferences().getBoolean(preference.getKey().toString(), true);
+                isRepeat = !sp_repeat.isChecked();
 
                 if (isRepeat == true) {
-                    Log.d(TAG, "onPreferenceClick: isRepeat " + isRepeat);
+                    Log.d(TAG, "onPreferenceChange: isRepeat " + isRepeat);
                     // 요일 선택
                     p_date.setEnabled(false);
                     p_day.setEnabled(true);
                 } else {
-                    Log.d(TAG, "onPreferenceClick: isRepeat " + isRepeat);
+                    Log.d(TAG, "onPreferenceChange: isRepeat " + isRepeat);
                     // 날짜 선택
                     p_day.setEnabled(false);
                     p_date.setEnabled(true);
                 }
                 break;
 
-            case "key_sp_vibe":
-                Log.d(TAG, "onPreferenceClick: sp_vibe");
-                final Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-                isVibe = !isVibe;
-                if (!isVibe) {
-                    vibrator.cancel();
-                } else {
-                    vibrator.vibrate(500);
-                }
-                break;
-
-            default:
-                break;
-        }
-
-
-        return false;
-    }
-
-    @Override
-    public boolean onPreferenceChange(Preference preference, Object newValue) {
-        switch (preference.getKey().toString()) {
             case "key_rp_ringtone":
                 preference.setPersistent(true);
                 Log.d(TAG, "onPreferenceChange: " + newValue.toString());
@@ -176,6 +171,17 @@ public class AlarmSetupFragment extends PreferenceFragment
                 CharSequence name = p_contact.getEntries()[index];
                 p_contact.setSummary(name.toString() + " (" + newValue.toString() + ")");
                 p_spCheck.setEnabled(true); // 문자 전화 선택 활성화
+                break;
+
+            case "key_sp_vibe":
+                Log.d(TAG, "onPreferenceChange: sp_vibe");
+                final Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+                isVibe = !isVibe;
+                if (!isVibe) {
+                    vibrator.cancel();
+                } else {
+                    vibrator.vibrate(500);
+                }
                 break;
         }
 
