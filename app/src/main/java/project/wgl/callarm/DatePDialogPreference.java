@@ -13,6 +13,7 @@ import android.widget.DatePicker;
 import android.widget.Toast;
 
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by WGL on 2018. 1. 19..
@@ -84,7 +85,7 @@ public class DatePDialogPreference extends DialogPreference implements DatePicke
 
         initCalendar();
         setTime(getCalendar().getTimeInMillis());
-        holder.dp.setMinDate(getTime());
+        holder.dp.setMinDate(getTime() - 100);
 
         if (isPersistent()) {
             // 등록 상태
