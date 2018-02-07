@@ -51,7 +51,7 @@
             android:summary="알람 벨소리를 선택합니다"/>
 
         <project.wgl.callarm.RVDialogPreference
-            android:key="key_rv"
+            android:key="key_p_rv"
             android:title="알람 볼륨/증감 조절"
             android:persistent="false"/>
 

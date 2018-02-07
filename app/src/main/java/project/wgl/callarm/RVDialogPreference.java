@@ -26,20 +26,16 @@ public class RVDialogPreference extends DialogPreference
     private View view;
     private RVHolder holder;
 
+    private String perStr = "";
     private int volValue = 0;
     private String volPattern = "";
+    private String s_p_rv = "";
 
     public RVDialogPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         this.context = context;
         init();
-
-        /**
-         * TODO
-         * (수정)
-         * 초기 볼륨크기 및 패턴 지정하여 null 관련 예외 발생하지 않도록 하기
-         */
     }
 
     private void init() {
@@ -56,6 +52,30 @@ public class RVDialogPreference extends DialogPreference
         holder.sb_ass = view.findViewById(R.id.sb_ass);
 
         view.setTag(holder);
+
+
+        perStr = getPersistedString(80 + ":" + holder.rb_af_sp.getTag().toString());
+        /**
+         * TODO
+         * (수정)
+         * 초기 볼륨크기 및 패턴 지정하여 null 관련 예외 발생하지 않도록 하기
+         *
+         * strings
+         */
+        volValue = Integer.parseInt(perStr.substring(0, perStr.indexOf(":"))); // : 부분
+        s_p_rv = perStr.substring(perStr.indexOf(":")+1, perStr.length()); // : 부분
+
+        if (s_p_rv.equals(holder.rb_af_sp.getTag().toString())) {
+            volPattern = holder.rb_af_sp.getText().toString();
+        } else if (s_p_rv.equals(holder.rb_ai_sp.getTag().toString())) {
+            volPattern = holder.rb_ai_sp.getText().toString();
+        } else {
+            volPattern = holder.rb_aid_sp.getText().toString();
+        }
+        
+        persistString(volValue + ":" + s_p_rv); // : 부분
+        String pre_volv = "볼륨 : ";
+        setSummary(pre_volv + volValue + ", " + volPattern); // 여기까지
     }
 
     @Override
@@ -69,11 +89,23 @@ public class RVDialogPreference extends DialogPreference
         /**
          * TODO
          * (수정)
-         * 알람 편집시 Progress 가 등록되어있는 알람 소리 크기값과 체크 상태로 복원되어야함.
+         * 알람 편집시 Progress 가 등록되어있는 체크 상태로 복원되어야함.
+         *
+         * strings (: 부분)
          */
-        holder.sb_ass.setProgress(70);
-        volValue = holder.sb_ass.getProgress();
-        holder.rb_af_sp.setChecked(true); // 여기까지
+        perStr = getPersistedString(80 + ":" + holder.rb_af_sp.getTag().toString());
+        volValue = Integer.parseInt(perStr.substring(0, perStr.indexOf(":")));
+        s_p_rv = perStr.substring(perStr.indexOf(":")+1, perStr.length()); // 여기까지
+
+        holder.sb_ass.setProgress(volValue);
+
+        if (s_p_rv.equals(holder.rb_af_sp.getTag().toString())) {
+            holder.rb_af_sp.setChecked(true);
+        } else if (s_p_rv.equals(holder.rb_ai_sp.getTag().toString())) {
+            holder.rb_ai_sp.setChecked(true);
+        } else {
+            holder.rb_aid_sp.setChecked(true);
+        }
 
         builder.setView(view);
         super.onPrepareDialogBuilder(builder);
@@ -96,14 +128,9 @@ public class RVDialogPreference extends DialogPreference
              * TODO
              * strings
              */
+            persistString(volValue + ":" + s_p_rv); // : 부분
             String pre_volv = "볼륨 : ";
             setSummary(pre_volv + volValue + ", " + volPattern); // 여기까지
-        } else {
-            /**
-             * TODO
-             * (수정사항)
-             * 저장 후 취소 눌러도, 그대로 반영된다.
-             */
         }
 
         // 종료시 ViewGroup 생성, view 객체를 종료하고 IllegalStateException 방지한다
@@ -117,7 +144,10 @@ public class RVDialogPreference extends DialogPreference
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        Log.d(TAG, "onCheckedChanged: " + buttonView.getTag() + ", " + isChecked);
+
+        if (isChecked) {
+            s_p_rv = buttonView.getTag().toString();
+        }
     }
 
     @Override

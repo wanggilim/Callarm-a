@@ -109,7 +109,7 @@ public class AlarmSetupFragment extends PreferenceFragment
         p_spCheck = (SPDialogPreference) findPreference("key_mp_check");
         p_spCheck.setOnPreferenceChangeListener(this);
 
-        p_rv = (RVDialogPreference) findPreference("key_rv");
+        p_rv = (RVDialogPreference) findPreference("key_p_rv");
         p_rv.setOnPreferenceChangeListener(this);
 
         // 선택 반영 리스너
@@ -131,6 +131,10 @@ public class AlarmSetupFragment extends PreferenceFragment
 
         if (s.equals("key_p_time")) {
             Log.d(TAG, "onSharedPreferenceChanged: key_p_time --> " + sharedPreferences.getLong("key_p_time", 0L));
+        }
+
+        if (s.equals("key_p_rv")) {
+            Log.d(TAG, "onSharedPreferenceChanged: key_p_rv --> " + sharedPreferences.getString("key_p_rv", ""));
         }
 
     }
@@ -218,6 +222,7 @@ public class AlarmSetupFragment extends PreferenceFragment
         p_rv.setPersistent(false);
 
         //getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+        as.edit().clear().commit();
         as.unregisterOnSharedPreferenceChangeListener(this);
 
         super.onDestroy();

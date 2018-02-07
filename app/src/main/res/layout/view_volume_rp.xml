@@ -35,19 +35,19 @@
 
                 <RadioButton
                     android:id="@+id/rb_af_sp"
-                    android:tag="RadioButton Alarm Patterns : Fixed"
+                    android:tag="rb_af_sp"
                     android:text="일정한 소리"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
                 <RadioButton
                     android:id="@+id/rb_ai_sp"
-                    android:tag="RadioButton Alarm Patterns : Increase"
+                    android:tag="rb_ai_sp"
                     android:text="점점 증가"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
                 <RadioButton
                     android:id="@+id/rb_aid_sp"
-                    android:tag="RadioButton Alarm Patterns : In-De"
+                    android:tag="rb_aid_sp"
                     android:text="증감 반복"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
