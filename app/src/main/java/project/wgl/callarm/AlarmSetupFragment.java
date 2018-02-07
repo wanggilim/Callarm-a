@@ -87,12 +87,8 @@ public class AlarmSetupFragment extends PreferenceFragment
         p_time = (TPDialogPreference) findPreference("key_p_time");
         p_time.setPersistent(false);
 
-        //rp_ringtone = (RingtonePreference) findPreference("key_rp_ringtone");
         rp_ringtone = (RPDialogPreference) findPreference("key_rp_ringtone");
         rp_ringtone.setOnPreferenceChangeListener(this);
-        Uri ringtoneUri = Uri.parse(as.getString(rp_ringtone.getKey(),""));
-        RingtoneManager manager = new RingtoneManager(context);
-        Log.d(TAG, "onRestoreRingtone: " + manager.getRingtone(context, ringtoneUri).getTitle(context));
 
         sp_vibe = (SwitchPreference) findPreference("key_sp_vibe");
         sp_vibe.setOnPreferenceChangeListener(this);
