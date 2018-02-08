@@ -69,7 +69,9 @@ public class AlarmSetupFragment extends PreferenceFragment
         // 프리퍼런스 생성
         //getPreferenceManager().setSharedPreferencesName("setNewAlarm");
         as = context.getSharedPreferences("setNewAlarm", 0);
+
         // 프리퍼런스 선언
+        // (1)
         sp_repeat = (SwitchPreference) findPreference("key_sp_repeat");
         sp_repeat.setOnPreferenceChangeListener(this);
         /**
@@ -79,19 +81,21 @@ public class AlarmSetupFragment extends PreferenceFragment
         isRepeat = true; // 반복 여부 기본값, 여기와
         sp_repeat.setChecked(true); // 여기까지
 
+        // (2)
         p_date = (DatePDialogPreference) findPreference("key_p_date");
         p_date.setPersistent(false);
-
         p_day = (DayPDialogPreference) findPreference("key_p_day");
-
         ex_daySet = getPreferenceManager().getSharedPreferences().getStringSet(p_day.getKey(), null);
 
+        // (3)
         p_time = (TPDialogPreference) findPreference("key_p_time");
         p_time.setPersistent(false);
 
+        // (4)
         rp_ringtone = (RPDialogPreference) findPreference("key_rp_ringtone");
         rp_ringtone.setOnPreferenceChangeListener(this);
-
+        p_rv = (RVDialogPreference) findPreference("key_p_rv");
+        p_rv.setOnPreferenceChangeListener(this);
         sp_vibe = (SwitchPreference) findPreference("key_sp_vibe");
         sp_vibe.setOnPreferenceChangeListener(this);
         /**
@@ -101,7 +105,7 @@ public class AlarmSetupFragment extends PreferenceFragment
         isVibe = true; // 진동 기본값, 여기와
         sp_vibe.setChecked(true); // 여기까지
 
-
+        // (5)
         key_pc_5 = (PreferenceGroup) findPreference("key_pc_5");
         p_contact = (CPDialogPreference) findPreference("key_p_contact");
         p_contact.setOnPreferenceChangeListener(this);
@@ -114,9 +118,6 @@ public class AlarmSetupFragment extends PreferenceFragment
             key_pc_5.setTitle(null);
             key_pc_5.setEnabled(false);
         }
-
-        p_rv = (RVDialogPreference) findPreference("key_p_rv");
-        p_rv.setOnPreferenceChangeListener(this);
 
         // 선택 반영 리스너
         //getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
@@ -177,7 +178,6 @@ public class AlarmSetupFragment extends PreferenceFragment
                 break;
 
             case "key_p_contact":
-                Log.d(TAG, "onPreferenceChange: newValue = " + newValue.toString());
                 /**
                  * TODO
                  * strings (+-0)
@@ -229,14 +229,17 @@ public class AlarmSetupFragment extends PreferenceFragment
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy: ");
-        p_time.setPersistent(false);
         p_date.setPersistent(false);
         p_day.setPersistent(false);
+
+        p_time.setPersistent(false);
+
         rp_ringtone.setPersistent(false);
         rp_ringtone.getPreferenceManager().getSharedPreferences().edit().clear().apply();
+        p_rv.setPersistent(false);
+
         p_contact.setPersistent(false);
         p_spCheck.setPersistent(false);
-        p_rv.setPersistent(false);
 
         //getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
         as.edit().clear().commit();
