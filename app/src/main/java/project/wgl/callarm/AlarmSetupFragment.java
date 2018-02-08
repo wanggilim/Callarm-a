@@ -12,6 +12,7 @@ import android.preference.CheckBoxPreference;
 import android.preference.MultiSelectListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceGroup;
 import android.preference.RingtonePreference;
 import android.preference.SwitchPreference;
 import android.support.annotation.Nullable;
@@ -48,6 +49,7 @@ public class AlarmSetupFragment extends PreferenceFragment
     private CPDialogPreference p_contact;
     private SPDialogPreference p_spCheck;
     private RVDialogPreference p_rv;
+    private PreferenceGroup key_pc_5;
 
     private boolean isRepeat; // 알람 반복 유무
 
@@ -99,11 +101,19 @@ public class AlarmSetupFragment extends PreferenceFragment
         isVibe = true; // 진동 기본값, 여기와
         sp_vibe.setChecked(true); // 여기까지
 
+
+        key_pc_5 = (PreferenceGroup) findPreference("key_pc_5");
         p_contact = (CPDialogPreference) findPreference("key_p_contact");
         p_contact.setOnPreferenceChangeListener(this);
-
         p_spCheck = (SPDialogPreference) findPreference("key_mp_check");
         p_spCheck.setOnPreferenceChangeListener(this);
+        if (p_contact.getContacts_cnt() > 1) {
+            p_contact.setEnabled(true);
+        } else {
+            key_pc_5.removeAll();
+            key_pc_5.setTitle(null);
+            key_pc_5.setEnabled(false);
+        }
 
         p_rv = (RVDialogPreference) findPreference("key_p_rv");
         p_rv.setOnPreferenceChangeListener(this);
@@ -167,10 +177,21 @@ public class AlarmSetupFragment extends PreferenceFragment
                 break;
 
             case "key_p_contact":
-                int index = p_contact.findIndexOfValue(newValue.toString());
-                CharSequence name = p_contact.getEntries()[index];
-                p_contact.setSummary(name.toString() + " (" + newValue.toString() + ")");
-                p_spCheck.setEnabled(true); // 문자 전화 선택 활성화
+                Log.d(TAG, "onPreferenceChange: newValue = " + newValue.toString());
+                /**
+                 * TODO
+                 * strings (+-0)
+                 */
+                if (!newValue.toString().equals("+-0")) {
+                    int index = p_contact.findIndexOfValue(newValue.toString());
+                    CharSequence name = p_contact.getEntries()[index];
+                    p_contact.setSummary(name.toString() + " (" + newValue.toString() + ")");
+                    p_spCheck.setEnabled(true); // 문자 전화 선택 활성화
+                } else {
+                    p_contact.setSummary(null);
+                    p_spCheck.setEnabled(false);
+                }
+
                 break;
 
             case "key_sp_vibe":

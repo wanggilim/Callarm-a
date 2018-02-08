@@ -18,32 +18,51 @@ public class CPDialogPreference extends ListPreference {
 
     private Context context;
 
-    private CPAdapter adapter;
+    private CharSequence[] nameEntries;
+    private CharSequence[] numberEntryValues;
+    private int contacts_cnt;
 
     public CPDialogPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.context = context;
+
+        start(new CPAdapter(this.context));
     }
 
-    @Override
-    protected void onPrepareDialogBuilder(AlertDialog.Builder builder) {
-        adapter = new CPAdapter(context);
-        adapter.setup();
+    private void start(CPAdapter ad) {
+        /**
+         * TODO
+         * strings (+-0)
+         */
+        onSetInitialValue(false, "+-0"); // 기본적으로 '없음(none)' 지정
 
-        //for (int i = 0; i < adapter.getCursor().getColumnCount(); i++) {
-            //Log.d(TAG, "onPrepareDialogBuilder: >>" + adapter.getCursor().getColumnName(i));
-        //}
+        ad.setup();
 
-        CharSequence[] nameEntries = new CharSequence[adapter.getCursor().getCount()];
-        CharSequence[] numberEntryValues = new CharSequence[adapter.getCursor().getCount()];
+        contacts_cnt = ad.getCursor().getCount();
+        if (contacts_cnt > 1) {
+            nameEntries = new CharSequence[contacts_cnt];
+            numberEntryValues = new CharSequence[contacts_cnt];
 
-        for (int i = 0; i < adapter.getCursor().getCount(); i++) {
-            nameEntries[i] = adapter.getName(i);
-            numberEntryValues[i] = adapter.getNumber(i);
+            for (int i = 0; i < contacts_cnt; i++) {
+                nameEntries[i] = ad.getName(i);
+                numberEntryValues[i] = ad.getNumber(i);
+            }
+            setEnabled(true);
+
+        } else {
+            setEnabled(false);
         }
+    }
+
+    public int getContacts_cnt() {
+        return contacts_cnt;
+    }
+
+
+    @Override
+    protected void onPrepareDialogBuilder(final AlertDialog.Builder builder) {
         setEntries(nameEntries);
         setEntryValues(numberEntryValues);
-
         super.onPrepareDialogBuilder(builder);
     }
 
@@ -57,4 +76,5 @@ public class CPDialogPreference extends ListPreference {
         }
         super.onDialogClosed(positiveResult);
     }
+
 }

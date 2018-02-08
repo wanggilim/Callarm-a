@@ -69,11 +69,16 @@ public class CPAdapter extends BaseAdapter implements ListAdapter {
     }
 
     public void setup() {
+        /**
+         * TODO
+         * strings (name, +-0)
+         */
+        al.add(new CData("선택하지 않음", "+-0")); // 없음 (none)
+
         for (int i = 0; i < getCursor().getCount(); i++) {
             getCursor().moveToPosition(i);
             String phoneName = getCursor().getString(1);
             String phoneNum = getCursor().getString(2);
-            // Log.d(TAG, phoneName + ", " + phoneNum);
             al.add(new CData(phoneName, phoneNum));
         }
     }
