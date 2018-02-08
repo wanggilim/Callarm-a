@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".AlarmSetupActivity">
+
+    <item
+        android:id="@+id/item_save_alarm"
+        android:title="저장"
+        android:icon="@mipmap/ic_launcher_round"
+        android:showAsAction="always|withText"
+        app:showAsAction="always|withText"
+        tools:ignore="AppCompatResource"/>
+</menu>
