@@ -1,28 +1,18 @@
 package project.wgl.callarm;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.preference.CheckBoxPreference;
-import android.preference.MultiSelectListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceGroup;
-import android.preference.RingtonePreference;
 import android.preference.SwitchPreference;
-import android.support.annotation.Nullable;
 import android.util.Log;
-import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -58,7 +48,7 @@ public class AlarmSetupFragment extends PreferenceFragment
     private Set<String> ex_daySet;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate: ");
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.layout_alarm_setup);
@@ -67,7 +57,6 @@ public class AlarmSetupFragment extends PreferenceFragment
         alarm = new Alarm();
 
         // 프리퍼런스 생성
-        //getPreferenceManager().setSharedPreferencesName("setNewAlarm");
         as = context.getSharedPreferences("setNewAlarm", 0);
 
         // 프리퍼런스 선언
@@ -114,9 +103,7 @@ public class AlarmSetupFragment extends PreferenceFragment
         if (p_contact.getContacts_cnt() > 1) {
             p_contact.setEnabled(true);
         } else {
-            key_pc_5.removeAll();
-            key_pc_5.setTitle(null);
-            key_pc_5.setEnabled(false);
+            getPreferenceScreen().removePreference(key_pc_5);
         }
 
         // 선택 반영 리스너
@@ -151,7 +138,6 @@ public class AlarmSetupFragment extends PreferenceFragment
 
         switch (preference.getKey().toString()) {
             case "key_sp_repeat":
-                //isRepeat = getPreferenceManager().getSharedPreferences().getBoolean(preference.getKey().toString(), true);
                 isRepeat = !sp_repeat.isChecked();
 
                 if (isRepeat == true) {
@@ -241,7 +227,6 @@ public class AlarmSetupFragment extends PreferenceFragment
         p_contact.setPersistent(false);
         p_spCheck.setPersistent(false);
 
-        //getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
         as.edit().clear().commit();
         as.unregisterOnSharedPreferenceChangeListener(this);
 
