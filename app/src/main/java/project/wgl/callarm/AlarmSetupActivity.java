@@ -1,9 +1,10 @@
 package project.wgl.callarm;
 
+import android.Manifest;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -28,6 +29,25 @@ public class AlarmSetupActivity extends AppCompatActivity implements Toolbar.OnM
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate: ");
         super.onCreate(savedInstanceState);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            String[] perms = new String[]{
+                    Manifest.permission.READ_CONTACTS,
+                    Manifest.permission.CALL_PHONE,
+                    Manifest.permission.SEND_SMS
+            };
+
+            Intent intent = new Intent(getApplicationContext(), PermissionsRequestActivity.class);
+            intent.putExtra("str_arr_perms", perms);
+            startActivityForResult(intent, 0);
+
+        } else {
+            start();
+        }
+
+    }
+
+    private void start() {
         setContentView(R.layout.activity_alarm_setup);
 
         holder.toolbar = findViewById(R.id.tb_setup_alarm);
@@ -50,7 +70,17 @@ public class AlarmSetupActivity extends AppCompatActivity implements Toolbar.OnM
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(TAG, "onActivityResult: ");
+        if (resultCode == RESULT_OK) {
+            Log.d(TAG, "onActivityResult: RESULT_OK");
+            start();
+        }
+
+        if (resultCode == RESULT_CANCELED) {
+            moveTaskToBack(true);
+            finish();
+            Log.d(TAG, "onActivityResult: RESULT_CANCELED");
+        }
+
         super.onActivityResult(requestCode, resultCode, data);
     }
 
