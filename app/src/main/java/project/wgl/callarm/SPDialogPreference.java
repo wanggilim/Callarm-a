@@ -5,6 +5,7 @@ import android.content.Context;
 import android.preference.DialogPreference;
 import android.support.v7.widget.AppCompatSpinner;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -38,9 +39,14 @@ public class SPDialogPreference extends DialogPreference implements CompoundButt
     TextView tv_sms_limit;
 
     AppCompatSpinner spin_time;
-    TextWatcher watcher;
 
     private String s_origin = ""; // 자동 버튼 누르기전, 작성하던 텍스트
+    private String s_save = "";
+    private boolean isPhone = false;
+    private boolean isSms = false;
+    private boolean isSmsAuto = false;
+    private int i_spin_select_no = 0;
+    private long l_time = 60000; // 스피너 선택 long 형 시간 기본값
 
     public SPDialogPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -108,6 +114,45 @@ public class SPDialogPreference extends DialogPreference implements CompoundButt
 
         builder.setView(view);
 
+        String s_gp = getPersistedString("");
+        if (!s_gp.equals("")) {
+            /**
+             * TODO
+             * strings (: 구분선)
+             */
+            String[] split_ar = s_gp.split(":");
+
+            /**
+             * split_ar list
+             * 0) i_spin_select_no  (spinner implement)
+             * 1) l_time            (spinner implement)
+             * 2) isPhone           (checkbox implement)
+             * 3) s_save
+             * 4) isSms             (checkbox implement)
+             * 5) isSmsAuto         (checkbox implement)
+             */
+            //test
+            for (int i = 0; i < split_ar.length; i++) {
+                Log.d(TAG, "onPrepareDialogBuilder: split_ar[" + i + "] = " + split_ar[i]);
+            }
+
+            spin_time.setSelection(Integer.valueOf(split_ar[0]));
+            cb_phone.setChecked(Boolean.valueOf(split_ar[2]));
+            s_origin = split_ar[3];
+            et_sms.setText(s_origin);
+            cb_sms.setChecked(Boolean.valueOf(split_ar[4]));
+            cb_sms_auto.setChecked(Boolean.valueOf(split_ar[5]));
+
+        } else {
+            spin_time.setSelection(0);
+            /**
+             * TODO
+             * strings
+             */
+            et_sms.setHint("문자 메시지 체크상자를 눌러주세요");
+            et_sms.setText(s_origin);
+        }
+
         super.onPrepareDialogBuilder(builder);
     }
 
@@ -120,16 +165,35 @@ public class SPDialogPreference extends DialogPreference implements CompoundButt
         parent.removeView(view);
 
         if (positiveResult) {
+
             setPersistent(true);
-        } else {
+
+            /**
+             * 0) i_spin_select_no  (spinner implement)
+             * 1) l_time            (spinner implement)
+             * 2) isPhone           (checkbox implement)
+             * 3) s_save
+             * 4) isSms             (checkbox implement)
+             * 5) isSmsAuto         (checkbox implement)
+             */
             /**
              * TODO
-             * (수정사항)
-             * 저장 후 취소 눌러도, 그대로 반영된다.
+             * strings + (: 구분선-보통 입력할 수 없는 문자로 변경)
              */
+            isPhone = cb_phone.isChecked();
+            isSms = cb_sms.isChecked();
+            isSmsAuto = cb_sms_auto.isChecked();
+            s_save = et_sms.getText().toString();
+            persistString(i_spin_select_no
+                    + ":" + l_time
+                    + ":" + isPhone
+                    + ":" + s_save
+                    + ":" + isSms
+                    + ":" + isSmsAuto);
+
+            super.onDialogClosed(positiveResult);
         }
 
-        super.onDialogClosed(positiveResult);
     }
 
     /////////////////////////////////////////////////////////////////
@@ -140,20 +204,22 @@ public class SPDialogPreference extends DialogPreference implements CompoundButt
             case "cb_sms":
                 /**
                  * TODO
-                 * strings
+                 * strings setHint 메서드 안에 있는 매개변수
                  */
-                et_sms.setHint("이 곳을 눌러 입력하기");
                 if (isChecked) {
                     cb_sms_auto.setEnabled(true);
                     if (cb_sms_auto.isChecked()) {
                         et_sms.setEnabled(!isChecked);
                     } else {
+                        et_sms.setHint("이 곳을 눌러 입력하기");
                         et_sms.setEnabled(isChecked);
                     }
                 } else {
+                    et_sms.setHint("문자 메시지 체크상자를 눌러주세요");
                     cb_sms_auto.setEnabled(false);
                     et_sms.setEnabled(isChecked);
                 }
+
                 break;
 
             case "cb_sms_auto":
@@ -188,7 +254,8 @@ public class SPDialogPreference extends DialogPreference implements CompoundButt
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        Log.d(TAG, "onItemSelected: " + parent.getItemAtPosition(position).toString() + ", " + parent.getItemIdAtPosition(position));
+        i_spin_select_no = position;
+        l_time = parent.getItemIdAtPosition(position); // 스피너 선택 long 형 시간값 저장
     }
 
     @Override

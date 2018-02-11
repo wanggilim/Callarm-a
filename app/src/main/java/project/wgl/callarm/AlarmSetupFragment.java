@@ -114,7 +114,7 @@ public class AlarmSetupFragment extends PreferenceFragment
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
         Log.d(TAG, "onSharedPreferenceChanged: ");
-        
+
         if (s.equals("key_p_date")) {
             Log.d(TAG, "onSharedPreferenceChanged: key_p_date");
         }

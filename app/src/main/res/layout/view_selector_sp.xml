@@ -50,7 +50,7 @@
                 android:enabled="false"
                 android:layout_weight="1"
                 android:autoSizeTextType="uniform"
-                android:hint="문자 메시지 체크상자를 눌러주세요"/>
+                android:maxLength="70"/>
 
             <CheckBox
                 android:id="@+id/cb_sms_auto"
