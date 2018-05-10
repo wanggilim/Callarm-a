@@ -131,6 +131,9 @@ public class RVDialogPreference extends DialogPreference
             persistString(volValue + ":" + s_p_rv); // : 부분
             String pre_volv = "볼륨 : ";
             setSummary(pre_volv + volValue + ", " + volPattern); // 여기까지
+
+            //Log.d(TAG, "onDialogClosed: getPersistedString = " + getPersistedString(""));
+            callChangeListener(getPersistedString(""));
         }
 
         // 종료시 ViewGroup 생성, view 객체를 종료하고 IllegalStateException 방지한다

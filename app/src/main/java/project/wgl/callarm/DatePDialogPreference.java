@@ -112,17 +112,18 @@ public class DatePDialogPreference extends DialogPreference implements DatePicke
 
     @Override
     protected void onDialogClosed(boolean positiveResult) {
+        /**
+         * TODO
+         * -- 테스트 필요 --
+         * 자정이 지나서 새로 날을 지정해야할 상황이 올 때
+         * 예외처리가 잘 되는지 확인하기
+         */
+
         if (positiveResult == true) {
-            // 확인 = 저장
-            /**
-             * TODO
-             * -- 테스트 필요 --
-             * 자정이 지나서 새로 날을 지정해야할 상황이 올 때
-             * 예외처리가 잘 되는지 확인하기
-             */
             if (holder.dp.getMinDate() > getTime()) {
                 Toast.makeText(context, "새로 날짜를 선택해야합니다", Toast.LENGTH_SHORT).show();
             } else {
+                // 확인 = 저장
                 setPersistent(true);
                 persistLong(time);
                 setCalendar(getTime());
@@ -131,6 +132,7 @@ public class DatePDialogPreference extends DialogPreference implements DatePicke
                         + (getCalendar().get(Calendar.MONTH)+1) + "월 "
                         + getCalendar().get(Calendar.DAY_OF_MONTH) + "일 ";
                 setSummary(summary);
+                callChangeListener(time);
 
                 super.onDialogClosed(positiveResult);
             }

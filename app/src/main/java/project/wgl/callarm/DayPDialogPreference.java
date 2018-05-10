@@ -65,7 +65,6 @@ public class DayPDialogPreference extends MultiSelectListPreference {
                 setSummary("요일을 설정합니다");
                 Log.d(TAG, "onDialogClosed: setSummary Init");
             } else {
-                Iterator<String> dayIter = getDaySet.iterator();
                 String day = "";
 
                 // int형 ArrayList로 형변환

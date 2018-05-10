@@ -191,6 +191,8 @@ public class SPDialogPreference extends DialogPreference implements CompoundButt
                     + ":" + isSms
                     + ":" + isSmsAuto);
 
+            callChangeListener(getPersistedString(""));
+
             super.onDialogClosed(positiveResult);
         }
 

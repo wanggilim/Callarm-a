@@ -132,6 +132,7 @@ public class TPDialogPreference extends DialogPreference
             setSummary(str_ampm + str_hour + ":" + str_minute);
 
             Log.d(TAG, "onDialogClosed: getTimeInMillis = " + timeInMillis);
+            callChangeListener(timeInMillis);
         }
 
         super.onDialogClosed(positiveResult);

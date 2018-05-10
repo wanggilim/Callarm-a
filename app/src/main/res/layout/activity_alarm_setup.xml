@@ -18,6 +18,7 @@
         <fragment
             android:id="@+id/fragment_alarm_setup"
             android:name="project.wgl.callarm.AlarmSetupFragment"
+            android:tag="fragment_alarm_setup"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
     </LinearLayout>
