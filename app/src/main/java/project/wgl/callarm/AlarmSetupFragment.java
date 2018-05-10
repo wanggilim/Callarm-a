@@ -24,8 +24,6 @@ public class AlarmSetupFragment extends PreferenceFragment implements Preference
 
     private Context context;
 
-    private Alarm alarm;
-
     private SwitchPreference sp_repeat;
     private DatePDialogPreference p_date;
     private DayPDialogPreference p_day;
@@ -48,7 +46,6 @@ public class AlarmSetupFragment extends PreferenceFragment implements Preference
         addPreferencesFromResource(R.xml.layout_alarm_setup);
         context = getActivity().getBaseContext();
 
-        alarm = new Alarm();
         setArguments(new Bundle());
 
         // 프리퍼런스 선언
@@ -119,32 +116,42 @@ public class AlarmSetupFragment extends PreferenceFragment implements Preference
                     p_date.setEnabled(true);
                 }
                 Log.d(TAG, "onPreferenceChange: isRepeat " + isRepeat);
-                alarm.setRepeat(isRepeat);
                 getArguments().putBoolean("isRepeat", isRepeat);
                 break;
 
             case "key_p_date":
                 Log.d(TAG, "onPreferenceChange: key_p_date " + newValue.toString());
-                alarm.setDateInMillis(Long.parseLong(newValue.toString()));
-                getArguments().putLong("date", alarm.getDateInMillis());
+                getArguments().putLong("date", Long.parseLong(newValue.toString()));
                 break;
 
             case "key_p_day":
                 Log.d(TAG, "onPreferenceChange: key_p_day " + newValue.toString());
                 HashSet<String> values = (HashSet) newValue;
                 String days = "";
+                String summary = "";
                 Iterator<String> iter = values.iterator();
+                String[] ddd = getResources().getStringArray(R.array.ddd);
                 while (iter.hasNext()) {
-                    days += iter.next().toString();
+                    String iterNext = iter.next().toString();
+                    days += iterNext;
+                    summary += ddd[Integer.parseInt(iterNext)] + " ";
+                    Log.d(TAG, "onPreferenceChange: days = " + iterNext + ", summary = " + summary);
                 }
-                alarm.setDays(days);
                 getArguments().putString("days", days);
+
+                /**
+                 * TODO
+                 * strings
+                 */
+                String prefDay = "매주 ";
+                preference.setSummary(
+                        prefDay + summary
+                );
                 break;
 
             case "key_p_time":
                 Log.d(TAG, "onPreferenceChange: key_p_time " + newValue.toString());
-                alarm.setTimeInMillis(Long.parseLong(newValue.toString()));
-                getArguments().putLong("time", alarm.getTimeInMillis());
+                getArguments().putLong("time", Long.parseLong(newValue.toString()));
                 break;
 
             case "key_rp_ringtone":
@@ -154,7 +161,6 @@ public class AlarmSetupFragment extends PreferenceFragment implements Preference
                 Uri uri = Uri.parse(newValue.toString());
                 Ringtone ringtone = RingtoneManager.getRingtone(context, uri);
                 rp_ringtone.setSummary(ringtone.getTitle(context));
-                alarm.setRingtoneUri(newValue.toString());
                 getArguments().putString("ringtoneUri", newValue.toString());
                 break;
 
@@ -173,12 +179,10 @@ public class AlarmSetupFragment extends PreferenceFragment implements Preference
                     CharSequence name = p_contact.getEntries()[index];
                     p_contact.setSummary(name.toString() + " (" + newValue.toString() + ")");
                     p_spCheck.setEnabled(true); // 문자 전화 선택 활성화
-                    alarm.setContact(newValue.toString());
                     getArguments().putString("contactsUri", newValue.toString());
                 } else {
                     p_contact.setSummary(null);
                     p_spCheck.setEnabled(false);
-                    alarm.setContact(null);
                 }
                 break;
 
@@ -191,7 +195,6 @@ public class AlarmSetupFragment extends PreferenceFragment implements Preference
                 } else {
                     vibrator.vibrate(500);
                 }
-                alarm.setVibe(isVibe);
                 getArguments().putBoolean("isVibe", isVibe);
                 break;
 
@@ -222,6 +225,7 @@ public class AlarmSetupFragment extends PreferenceFragment implements Preference
         Log.d(TAG, "onDestroy: ");
         p_date.setPersistent(false);
         p_day.setPersistent(false);
+        p_day.getPreferenceManager().getSharedPreferences().edit().clear().apply();
 
         p_time.setPersistent(false);
 

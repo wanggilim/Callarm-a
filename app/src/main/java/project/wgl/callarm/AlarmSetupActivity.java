@@ -117,7 +117,7 @@ public class AlarmSetupActivity extends AppCompatActivity implements Toolbar.OnM
                         "까꿍! " + fragment.getArguments().size(),
                         Toast.LENGTH_SHORT).show();
 
-                // () 저장할 컬럼명 지정
+                // (2) 저장할 컬럼명 지정
                 ArrayList<String> al = new ArrayList<>();
                 Iterator<String> iter = bundle.keySet().iterator();
                 while (iter.hasNext()) {
@@ -134,11 +134,11 @@ public class AlarmSetupActivity extends AppCompatActivity implements Toolbar.OnM
                     }
                 }
 
-                // (1) 알람 켜기/끄기 설정 -- 저장할 것이기 때문에 자동으로 켜지기
+                // (3) 알람 켜기/끄기 설정 -- 저장할 것이기 때문에 자동으로 켜지기
                 final int isOn_int = 1;
 
 
-                // (2) 반복 켜기/끄기 설정 + time_l 세팅 및 변환 준비
+                // (4) 반복 켜기/끄기 설정 + time_l 세팅 및 변환 준비
                 Calendar ymd = Calendar.getInstance();
                 Calendar hms = Calendar.getInstance();
 
@@ -150,7 +150,7 @@ public class AlarmSetupActivity extends AppCompatActivity implements Toolbar.OnM
                 Calendar dt = Calendar.getInstance(); // long 타입 시간 저장하기 위한 Calendar 객체
                 long time_l = 0l; // long 타입의 시간
 
-                // (3)-1 요일 반복
+                // (5)-1 요일 반복
                 if (isRepeat_int == 1) {
                     days = bundle.getString("days");
                     Log.d(TAG, "onMenuItemClick: days ==> " + days);
@@ -160,32 +160,32 @@ public class AlarmSetupActivity extends AppCompatActivity implements Toolbar.OnM
                     dt.set(Calendar.SECOND, 0);
                     dt.set(Calendar.MILLISECOND, 0);
 
-                // (3)-2 일회용 설정
+                // (6)-2 일회용 설정
                 } else {
                     dt.set(ymd.get(Calendar.YEAR), ymd.get(Calendar.MONTH), ymd.get(Calendar.DAY_OF_MONTH),
                             hms.get(Calendar.HOUR_OF_DAY), hms.get(Calendar.MINUTE), 0);
                     dt.set(Calendar.MILLISECOND, 0);
                 }
 
-                // (3)-공통 time_l 최종 결정
+                // (6)-공통 time_l 최종 결정
                 time_l = dt.getTimeInMillis();
 
-                // (4) 진동 켜기/끄기 설정
+                // (7) 진동 켜기/끄기 설정
                 int isVibe_int = bundle.getBoolean("isVibe")? 1 : 0;
 
-                // (5) 벨소리 uri
+                // (8) 벨소리 uri
                 String ringtoneUri = bundle.getString("ringtoneUri");
 
-                // (6) 알람의 소리 세부설정 정보
+                // (9) 알람의 소리 세부설정 정보
                 String volPattern = bundle.getString("volPattern");
 
-                // (7) 연락처 정보
+                // (10) 연락처 정보
                 String contactsUri = bundle.getString("contactsUri");
 
-                // (8) 알람 활동시 동작 설정
+                // (11) 알람 활동시 동작 설정
                 String split_ar = bundle.getString("split_ar");
 
-                // (9) 데이터베이스 저장
+                // (12) 데이터베이스 저장
                 DatabaseOpenHelper helper = new DatabaseOpenHelper(getBaseContext());
                 SQLiteDatabase db = helper.getWritableDatabase();
 
