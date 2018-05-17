@@ -22,5 +22,14 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        Button bt_alarm_list = findViewById(R.id.bt_alarm_list);
+        bt_alarm_list.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), AlarmListActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 }
