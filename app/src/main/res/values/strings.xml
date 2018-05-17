@@ -1,3 +1,23 @@
 <resources>
     <string name="app_name">Callarm</string>
+
+    <string-array name="ddd">
+        <item>일요일</item>
+        <item>월요일</item>
+        <item>화요일</item>
+        <item>수요일</item>
+        <item>목요일</item>
+        <item>금요일</item>
+        <item>토요일</item>
+    </string-array>
+
+    <string-array name="ddd_result">
+        <item>0</item> <!-- Calendar.SUNDAY -1 -->
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+    </string-array>
 </resources>

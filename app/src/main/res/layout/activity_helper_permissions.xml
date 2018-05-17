@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:background="#005830"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_helper_perm_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#ffffff"
+                android:text="안드로이드 6.0 (마쉬멜로우) 이상의 버전을 사용하시는 분들을 위해, 시스템의 정책에 따라 Callarm(콜람) 앱으로부터 사용자분들에게 권한을 요구합니다. (알람 설정시에 반드시 필요하며, 거부할 시 프로그램이 비정상적으로 작동 될 수 있습니다.)"
+                android:textSize="15dp" />
+
+            <TextView
+                android:id="@+id/tv_helper_perm_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="10dp"
+                android:textColor="#ffffff"
+                android:text="1. 연락처 : 알람 설정시, 연락처 선택 기능이 있습니다. 이 기능은 연락처를 불러올 때, 그리고 알람 설정 레이아웃 조정시에 필요합니다."
+                android:textSize="15dp"/>
+            <TextView
+                android:id="@+id/tv_helper_perm_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="10dp"
+                android:textColor="#ffffff"
+                android:text="2. 전화 발신 : 알람 설정에 따라 전화 통화를 걸 수 있습니다. 설정에 따라 작동되며,  이 앱을 통하여 통화 녹음이 되지 않습니다."
+                android:textSize="15dp"/>
+            <TextView
+                android:id="@+id/tv_helper_perm_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="10dp"
+                android:textColor="#ffffff"
+                android:text="3. 문자 메시지 송신 : 알람 설정에 따라 문자 메시지를 전송할 수 있습니다. 설정에 따라 작동되며, 임의로 수신 메시지를 전송하지 않습니다."
+                android:textSize="15dp"/>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <Button
+                    android:id="@+id/btn_allow_check_perm"
+                    android:tag="check_allow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="예, 알겠습니다."/>
+            </RelativeLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <Button
+                    android:id="@+id/btn_deny_check_perm"
+                    android:tag="check_deny"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="아니오, 종료합니다."/>
+            </RelativeLayout>
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>
