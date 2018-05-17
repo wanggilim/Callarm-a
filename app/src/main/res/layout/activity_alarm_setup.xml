@@ -15,10 +15,8 @@
             android:layout_height="wrap_content">
         </android.support.v7.widget.Toolbar>
 
-        <fragment
-            android:id="@+id/fragment_alarm_setup"
-            android:name="project.wgl.callarm.AlarmSetupFragment"
-            android:tag="fragment_alarm_setup"
+        <FrameLayout
+            android:id="@+id/fl_fragment_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
     </LinearLayout>

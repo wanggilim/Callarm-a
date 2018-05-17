@@ -16,7 +16,12 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 /**
+ * 알람 설정 프래그먼트
  * Created by WGL on 2018. 1. 10..
+ *
+ * TODO
+ * Bundle 에 포함되어있는 Arguments 들을 그대로 불러오기
+ * 초기 설정인 경우, 기본값에 해당되는 별도의 static 변수를 사용하여 불러오기
  */
 
 public class AlarmSetupFragment extends PreferenceFragment implements Preference.OnPreferenceChangeListener {
@@ -38,15 +43,32 @@ public class AlarmSetupFragment extends PreferenceFragment implements Preference
 
     private boolean isRepeat; // 알람 반복 유무
 
+    public static AlarmSetupFragment newInstance(Bundle args) {
+        Log.d(TAG, "AlarmSetupFragment newInstance");
+
+        AlarmSetupFragment fragment = new AlarmSetupFragment();
+
+        if (args == null || args.isEmpty()) {
+            Log.d(TAG, "newInstance: args is null or empty");
+            args = new Bundle();
+        } else {
+            Log.d(TAG, "newInstance: args is not null nor empty");
+        }
+        fragment.setArguments(args);
+
+        return fragment;
+    }
+
+    public AlarmSetupFragment() {
+        Log.d(TAG, "AlarmSetupFragment: empty constructor");
+    }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate: ");
         super.onCreate(savedInstanceState);
-        addPreferencesFromResource(R.xml.layout_alarm_setup);
+        addPreferencesFromResource(R.xml.layout_alarm_setup); // 이 부분을 띄워야한다.
         context = getActivity().getBaseContext();
-
-        setArguments(new Bundle());
 
         // 프리퍼런스 선언
         // (1)
@@ -56,8 +78,8 @@ public class AlarmSetupFragment extends PreferenceFragment implements Preference
          * TODO
          * 설정 알람에 대한 반복 설정 가져오기
          */
-        isRepeat = true; // 반복 여부 기본값, 여기와
-        sp_repeat.setChecked(true); // 여기까지
+        sp_repeat.setChecked(true); // 반복 여부 기본값, 여기와
+        getArguments().putBoolean("isRepeat", sp_repeat.isChecked()); // 여기까지
 
         // (2)
         p_date = (DatePDialogPreference) findPreference("key_p_date");
@@ -75,16 +97,29 @@ public class AlarmSetupFragment extends PreferenceFragment implements Preference
         // (4)
         rp_ringtone = (RPDialogPreference) findPreference("key_rp_ringtone");
         rp_ringtone.setOnPreferenceChangeListener(this);
+        /**
+         * TODO
+         * 기본 값 숨기기
+         */
+        getArguments().putString("ringtoneUri", "content://settings/system/ringtone");
+        getArguments().putBoolean("ck_ringtoneUri", true);
         p_rv = (RVDialogPreference) findPreference("key_p_rv");
         p_rv.setOnPreferenceChangeListener(this);
+        /**
+         * TODO
+         * 기본 값 숨기기
+         */
+        getArguments().putString("volPattern", "80:rb_af_sp");
+        getArguments().putBoolean("ck_volPattern", true);
         sp_vibe = (SwitchPreference) findPreference("key_sp_vibe");
         sp_vibe.setOnPreferenceChangeListener(this);
         /**
          * TODO
          * 설정 알람에 대한 반복 설정 가져오기
          */
-        isVibe = true; // 진동 기본값, 여기와
-        sp_vibe.setChecked(true); // 여기까지
+        isVibe = true; // 진동 기본값, 여기부터
+        sp_vibe.setChecked(true);
+        getArguments().putBoolean("isVibe", true); // 여기까지
 
         // (5)
         key_pc_5 = (PreferenceGroup) findPreference("key_pc_5");
@@ -96,6 +131,7 @@ public class AlarmSetupFragment extends PreferenceFragment implements Preference
             p_contact.setEnabled(true);
         } else {
             getPreferenceScreen().removePreference(key_pc_5);
+
         }
     }
 
@@ -110,63 +146,90 @@ public class AlarmSetupFragment extends PreferenceFragment implements Preference
                     // 요일 선택
                     p_date.setEnabled(false);
                     p_day.setEnabled(true);
+
                 } else {
                     // 날짜 선택
                     p_day.setEnabled(false);
                     p_date.setEnabled(true);
                 }
-                Log.d(TAG, "onPreferenceChange: isRepeat " + isRepeat);
                 getArguments().putBoolean("isRepeat", isRepeat);
                 break;
 
             case "key_p_date":
                 Log.d(TAG, "onPreferenceChange: key_p_date " + newValue.toString());
                 getArguments().putLong("date", Long.parseLong(newValue.toString()));
+                getArguments().putBoolean("ck_date", true);
                 break;
 
             case "key_p_day":
                 Log.d(TAG, "onPreferenceChange: key_p_day " + newValue.toString());
                 HashSet<String> values = (HashSet) newValue;
-                String days = "";
-                String summary = "";
-                Iterator<String> iter = values.iterator();
-                String[] ddd = getResources().getStringArray(R.array.ddd);
-                while (iter.hasNext()) {
-                    String iterNext = iter.next().toString();
-                    days += iterNext;
-                    summary += ddd[Integer.parseInt(iterNext)] + " ";
-                    Log.d(TAG, "onPreferenceChange: days = " + iterNext + ", summary = " + summary);
-                }
-                getArguments().putString("days", days);
 
-                /**
-                 * TODO
-                 * strings
-                 */
-                String prefDay = "매주 ";
-                preference.setSummary(
-                        prefDay + summary
-                );
+                if (!values.isEmpty()) {
+                    String days = "";
+                    String summary = "";
+                    Iterator<String> iter = values.iterator();
+                    String[] ddd = getResources().getStringArray(R.array.ddd);
+                    while (iter.hasNext()) {
+                        String iterNext = iter.next().toString();
+                        days += iterNext;
+                        summary += ddd[Integer.parseInt(iterNext)] + " ";
+                        Log.d(TAG, "onPreferenceChange: days = " + iterNext + ", summary = " + summary);
+                    }
+                    getArguments().putString("days", days);
+                    getArguments().putBoolean("ck_days", true);
+
+                    /**
+                     * TODO
+                     * strings
+                     */
+                    String prefDay = "매주 ";
+                    preference.setSummary(
+                            prefDay + summary
+                    );
+                } else {
+                    /**
+                     * TODO
+                     * strings
+                     */
+                    preference.setSummary("요일을 설정합니다");
+                    getArguments().putString("days", "");
+                    getArguments().putBoolean("ck_days", false);
+                }
+
                 break;
 
             case "key_p_time":
                 Log.d(TAG, "onPreferenceChange: key_p_time " + newValue.toString());
                 getArguments().putLong("time", Long.parseLong(newValue.toString()));
+                getArguments().putBoolean(("ck_time"), true);
                 break;
 
             case "key_rp_ringtone":
                 preference.setPersistent(true);
                 Log.d(TAG, "onPreferenceChange: key_rp_ringtone " + newValue.toString());
-                preference.setDefaultValue(newValue.toString());
-                Uri uri = Uri.parse(newValue.toString());
+                String result = newValue.toString();
+                preference.setDefaultValue(result);
+                Uri uri = Uri.parse(result);
                 Ringtone ringtone = RingtoneManager.getRingtone(context, uri);
                 rp_ringtone.setSummary(ringtone.getTitle(context));
-                getArguments().putString("ringtoneUri", newValue.toString());
+                getArguments().putString("ringtoneUri", result);
+                /**
+                 * TODO
+                 * if 안으로 들어가는 조건이 더 있는지 확인해보기
+                 */
+                if (result.equals("") || result.equals(null)) {
+                    getArguments().putBoolean("ck_ringtoneUri", false);
+                } else {
+                    getArguments().putBoolean("ck_ringtoneUri", true);
+                }
+
                 break;
 
             case "key_p_rv":
                 Log.d(TAG, "onPreferenceChange: key_p_rv " + newValue.toString());
                 getArguments().putString("volPattern", newValue.toString());
+                getArguments().putBoolean("ck_volPattern", true);
                 break;
 
             case "key_p_contact":
@@ -179,10 +242,14 @@ public class AlarmSetupFragment extends PreferenceFragment implements Preference
                     CharSequence name = p_contact.getEntries()[index];
                     p_contact.setSummary(name.toString() + " (" + newValue.toString() + ")");
                     p_spCheck.setEnabled(true); // 문자 전화 선택 활성화
-                    getArguments().putString("contactsUri", newValue.toString());
+                    getArguments().putString("contactUri", newValue.toString());
+                    getArguments().putBoolean("ck_contactUri", true);
                 } else {
                     p_contact.setSummary(null);
                     p_spCheck.setEnabled(false);
+                    getArguments().putString("contactUri", null);
+                    getArguments().putBoolean("ck_contactUri", false);
+                    getArguments().putBoolean("ck_split_ar", false);
                 }
                 break;
 
@@ -200,7 +267,13 @@ public class AlarmSetupFragment extends PreferenceFragment implements Preference
 
             case "key_mp_check":
                 Log.d(TAG, "onPreferenceChange: mp_check");
-                getArguments().putString("split_ar", newValue.toString());
+                if (!newValue.toString().equals("")) {
+                    getArguments().putString("split_ar", newValue.toString());
+                    getArguments().putBoolean("ck_split_ar", true);
+                } else {
+                    getArguments().putString("split_ar", newValue.toString());
+                    getArguments().putBoolean("ck_split_ar", false);
+                }
                 break;
         }
 
@@ -221,6 +294,12 @@ public class AlarmSetupFragment extends PreferenceFragment implements Preference
     }
 
     @Override
+    public void onStop() {
+        Log.d(TAG, "onStop: ");
+        super.onStop();
+    }
+
+    @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy: ");
         p_date.setPersistent(false);
@@ -236,7 +315,10 @@ public class AlarmSetupFragment extends PreferenceFragment implements Preference
         p_contact.setPersistent(false);
         p_spCheck.setPersistent(false);
 
+        key_pc_5.setPersistent(false);
+
+        setArguments(null);
+
         super.onDestroy();
     }
-
 }
