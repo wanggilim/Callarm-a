@@ -12,6 +12,7 @@ import android.preference.PreferenceGroup;
 import android.preference.SwitchPreference;
 import android.util.Log;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -166,15 +167,19 @@ public class AlarmSetupFragment extends PreferenceFragment implements Preference
                 HashSet<String> values = (HashSet) newValue;
 
                 if (!values.isEmpty()) {
+                    Object[] intArr = values.toArray();
+                    Arrays.sort(intArr);
+                    Log.d(TAG, "onPreferenceChange: intArr.length = " + intArr.length);
+                    int dayIndex = 0;
                     String days = "";
                     String summary = "";
-                    Iterator<String> iter = values.iterator();
                     String[] ddd = getResources().getStringArray(R.array.ddd);
-                    while (iter.hasNext()) {
-                        String iterNext = iter.next().toString();
-                        days += iterNext;
-                        summary += ddd[Integer.parseInt(iterNext)] + " ";
-                        Log.d(TAG, "onPreferenceChange: days = " + iterNext + ", summary = " + summary);
+
+                    for (int i = 0; i < intArr.length; i++) {
+                        dayIndex = Integer.parseInt(String.valueOf(intArr[i]));
+                        days += dayIndex;
+                        summary += ddd[dayIndex] + " ";
+                        Log.d(TAG, "onPreferenceChange: day = " + dayIndex + ", days = " + days + ", " + "summary = " + summary);
                     }
                     getArguments().putString("days", days);
                     getArguments().putBoolean("ck_days", true);
@@ -317,7 +322,9 @@ public class AlarmSetupFragment extends PreferenceFragment implements Preference
 
         key_pc_5.setPersistent(false);
 
-        setArguments(null);
+        getPreferenceManager().getSharedPreferences().edit().clear().apply();
+        getArguments().clear();
+
 
         super.onDestroy();
     }

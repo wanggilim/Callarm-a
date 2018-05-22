@@ -53,7 +53,7 @@ public class DayPDialogPreference extends MultiSelectListPreference {
 
         Log.d(TAG, "onDialogClosed: " + positiveResult);
         if (positiveResult) {
-            setPersistent(true);
+            //setPersistent(true);
             notifyChanged();
         }
 
