@@ -1,6 +1,7 @@
 package project.wgl.callarm;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -133,10 +134,20 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
         execute(db, sb);
     }
 
-    public void read(SQLiteDatabase db) {
+    public Cursor read(SQLiteDatabase db) {
         Log.d(TAG, "read: SQL 이용 검색");
         StringBuffer sb = new StringBuffer();
-        execute(db, sb);
+
+        String table = "CA_S";
+        String[] columns = new String[]{"isOn","isRepeat",
+                "time_l","days","isVibe","ringtoneUri",
+                "volPattern","contactsUri","split_ar"};
+
+        return db.query(table, columns,
+                null, null,
+                null, null,
+                null);
+
     }
 
     public void update(SQLiteDatabase db) {

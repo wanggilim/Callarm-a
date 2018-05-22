@@ -21,12 +21,17 @@ public class Alarm {
 
     private boolean isOn = false;
     private boolean isRepeat = false;
-    private boolean isVibe = false;
+    private long time_l;
     private String days = "";
+    private boolean isVibe = false;
+    private String ringtoneUri = "";
+    private String volPattern = "";
+    private String contactsUri = "";
+    private String split_ar = "";
+
     private long dateInMillis = 0l; // 연도 + 날짜
     private long timeInMillis = 0l; // 시간
     private long dateTime = 0l; // dateInMillis + timeInMillis
-    private String ringtoneUri = "";
     private String contact = "";
 
     public Alarm() {
@@ -40,16 +45,8 @@ public class Alarm {
         isOn = on;
     }
 
-    public boolean isRepeat() {
-        return isRepeat;
-    }
-
     public void setRepeat(boolean repeat) {
         isRepeat = repeat;
-    }
-
-    public boolean isVibe() {
-        return isVibe;
     }
 
     public void setVibe(boolean vibe) {
