@@ -40,6 +40,7 @@ public class AlarmListActivity extends AppCompatActivity {
         Cursor result = helper.read(db);
 
         ArrayList<Alarm> alarms = new ArrayList<>();
+        //CPAdapter adapter = new CPAdapter(context);
         /**
          * TODO
          * 1. Alarm 객체 가공해야함
@@ -48,6 +49,8 @@ public class AlarmListActivity extends AppCompatActivity {
          * (추후)
          * - 가공한 Alarm 서비스로 등록하기
          */
+        AlarmItemCreator creator = new AlarmItemCreator(context);
+
         while (result.moveToNext()) {
             // (1) 새 Alarm 객체 선언
             Alarm alarm = new Alarm();
@@ -66,17 +69,26 @@ public class AlarmListActivity extends AppCompatActivity {
             // (3) Alarm 객체의 setter 로 값들을 삽입한다.
             alarm.setOn(isOn);
             alarm.setRepeat(isRepeat);
-            alarm.setContact(contactsUri);
-            //time_l 가공 해야함
+            alarm.setContactsUri(contactsUri);
+            alarm.setTime_l(time_l);
             alarm.setDays(days);
             alarm.setVibe(isVibe);
             alarm.setRingtoneUri(ringtoneUri);
-            //volPattern 가공 해야함
-            alarm.setContact(contactsUri);
-            //split_ar 가공 해야함
+            alarm.setVolPattern(volPattern);
+            alarm.setContactsUri(contactsUri);
+            alarm.setSplit_ar(split_ar);
 
             // (4) Alarm 객체 기반 ArrayList 안으로, 선언하고 정의한 Alarm 객체를 삽입한다.
             alarms.add(alarm);
+
+            // 테스트 (5) Cursor 출력 후 테스트
+            if (contactsUri == null || contactsUri.equals("")) {
+                Log.d(TAG, "onCreate: 연락처 미선택");
+            } else {
+                Log.d(TAG, "onCreate: 연락처 존재");
+                creator.showResult(contactsUri);
+            }
+
         }
 
         recyclerView = findViewById(R.id.rv_alarm_list);

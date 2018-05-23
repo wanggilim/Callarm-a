@@ -287,32 +287,32 @@ public class AlarmSetupActivity extends AppCompatActivity implements Toolbar.OnM
                     builder.show();
                     break;
 
-                } else if (bundle.containsKey("ck_contactUri")) {
-                    if (!bundle.getBoolean("ck_contactUri")) {
-                        builder.setMessage("정말 연락처를 선택하지 않으시겠습니까?");
-                        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Log.d(TAG, "onClick: AlertDialog 예 종료");
-
-                            }
-                        }).setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Log.d(TAG, "onClick: AlertDialog 아니오 종료");
-                            }
-                        }).setNeutralButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Log.d(TAG, "onClick: AlertDialog 취소 종료");
-                            }
-                        });
-                        builder.show();
-                        break;
-                    } else if (bundle.getString("split_ar").equals("")) {
-                        builder.setMessage("전화나 문자메시지를 설정하지 않았습니다.");
-                        builder.show();
-                    }
+//                } else if (bundle.containsKey("ck_contactUri")) {
+//                    if (!bundle.getBoolean("ck_contactUri")) {
+//                        builder.setMessage("정말 연락처를 선택하지 않으시겠습니까?");
+//                        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                Log.d(TAG, "onClick: AlertDialog 예 종료");
+//
+//                            }
+//                        }).setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                Log.d(TAG, "onClick: AlertDialog 아니오 종료");
+//                            }
+//                        }).setNeutralButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                Log.d(TAG, "onClick: AlertDialog 취소 종료");
+//                            }
+//                        });
+//                        builder.show();
+//                        break;
+//                    } else if (bundle.getString("split_ar").equals("")) {
+//                        builder.setMessage("전화나 문자메시지를 설정하지 않았습니다.");
+//                        builder.show();
+//                    }
                 } else {
                     save(bundle);
                     break;
