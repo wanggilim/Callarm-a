@@ -12,6 +12,7 @@ import android.preference.PreferenceGroup;
 import android.preference.SwitchPreference;
 import android.util.Log;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -128,6 +129,7 @@ public class AlarmSetupFragment extends PreferenceFragment implements Preference
         p_spCheck = (SPDialogPreference) findPreference("key_mp_check");
         p_spCheck.setOnPreferenceChangeListener(this);
         if (p_contact.getContacts_cnt() > 1) {
+            getArguments().putBoolean("ck_contactsUri", false);
             p_contact.setEnabled(true);
         } else {
             getPreferenceScreen().removePreference(key_pc_5);
@@ -166,15 +168,19 @@ public class AlarmSetupFragment extends PreferenceFragment implements Preference
                 HashSet<String> values = (HashSet) newValue;
 
                 if (!values.isEmpty()) {
+                    Object[] intArr = values.toArray();
+                    Arrays.sort(intArr);
+                    Log.d(TAG, "onPreferenceChange: intArr.length = " + intArr.length);
+                    int dayIndex = 0;
                     String days = "";
                     String summary = "";
-                    Iterator<String> iter = values.iterator();
                     String[] ddd = getResources().getStringArray(R.array.ddd);
-                    while (iter.hasNext()) {
-                        String iterNext = iter.next().toString();
-                        days += iterNext;
-                        summary += ddd[Integer.parseInt(iterNext)] + " ";
-                        Log.d(TAG, "onPreferenceChange: days = " + iterNext + ", summary = " + summary);
+
+                    for (int i = 0; i < intArr.length; i++) {
+                        dayIndex = Integer.parseInt(String.valueOf(intArr[i]));
+                        days += dayIndex;
+                        summary += ddd[dayIndex] + " ";
+                        Log.d(TAG, "onPreferenceChange: day = " + dayIndex + ", days = " + days + ", " + "summary = " + summary);
                     }
                     getArguments().putString("days", days);
                     getArguments().putBoolean("ck_days", true);
@@ -242,13 +248,14 @@ public class AlarmSetupFragment extends PreferenceFragment implements Preference
                     CharSequence name = p_contact.getEntries()[index];
                     p_contact.setSummary(name.toString() + " (" + newValue.toString() + ")");
                     p_spCheck.setEnabled(true); // 문자 전화 선택 활성화
-                    getArguments().putString("contactUri", newValue.toString());
-                    getArguments().putBoolean("ck_contactUri", true);
+                    getArguments().putString("contactsUri", newValue.toString());
+                    getArguments().putBoolean("ck_contactsUri", true);
+                    getArguments().putBoolean("ck_split_ar", false);
                 } else {
                     p_contact.setSummary(null);
                     p_spCheck.setEnabled(false);
-                    getArguments().putString("contactUri", null);
-                    getArguments().putBoolean("ck_contactUri", false);
+                    getArguments().putString("contactsUri", null);
+                    getArguments().putBoolean("ck_contactsUri", false);
                     getArguments().putBoolean("ck_split_ar", false);
                 }
                 break;
@@ -317,7 +324,8 @@ public class AlarmSetupFragment extends PreferenceFragment implements Preference
 
         key_pc_5.setPersistent(false);
 
-        setArguments(null);
+        getPreferenceManager().getSharedPreferences().edit().clear().apply();
+        getArguments().clear();
 
         super.onDestroy();
     }
