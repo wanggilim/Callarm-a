@@ -129,6 +129,7 @@ public class AlarmSetupFragment extends PreferenceFragment implements Preference
         p_spCheck = (SPDialogPreference) findPreference("key_mp_check");
         p_spCheck.setOnPreferenceChangeListener(this);
         if (p_contact.getContacts_cnt() > 1) {
+            getArguments().putBoolean("ck_contactsUri", false);
             p_contact.setEnabled(true);
         } else {
             getPreferenceScreen().removePreference(key_pc_5);
@@ -247,13 +248,14 @@ public class AlarmSetupFragment extends PreferenceFragment implements Preference
                     CharSequence name = p_contact.getEntries()[index];
                     p_contact.setSummary(name.toString() + " (" + newValue.toString() + ")");
                     p_spCheck.setEnabled(true); // 문자 전화 선택 활성화
-                    getArguments().putString("contactUri", newValue.toString());
-                    getArguments().putBoolean("ck_contactUri", true);
+                    getArguments().putString("contactsUri", newValue.toString());
+                    getArguments().putBoolean("ck_contactsUri", true);
+                    getArguments().putBoolean("ck_split_ar", false);
                 } else {
                     p_contact.setSummary(null);
                     p_spCheck.setEnabled(false);
-                    getArguments().putString("contactUri", null);
-                    getArguments().putBoolean("ck_contactUri", false);
+                    getArguments().putString("contactsUri", null);
+                    getArguments().putBoolean("ck_contactsUri", false);
                     getArguments().putBoolean("ck_split_ar", false);
                 }
                 break;
@@ -324,7 +326,6 @@ public class AlarmSetupFragment extends PreferenceFragment implements Preference
 
         getPreferenceManager().getSharedPreferences().edit().clear().apply();
         getArguments().clear();
-
 
         super.onDestroy();
     }

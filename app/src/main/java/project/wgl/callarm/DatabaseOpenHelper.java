@@ -122,7 +122,7 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
         sb.append(isVibe + ", ");        // isVibe (0 or 1)      NOT NULL
         sb.append("'" + ringtoneUri + "', ");   // ringtoneUri
         sb.append("'" + volPattern + "', ");    // volPattern
-        if (contactsUri == null || contactsUri.equals(null)) {
+        if (contactsUri == null || contactsUri.equals(null) || contactsUri.equals("")) {
             sb.append(contactsUri + ", ");      // contactsUri
             sb.append(split_ar + ");");      // split_ar
         } else {

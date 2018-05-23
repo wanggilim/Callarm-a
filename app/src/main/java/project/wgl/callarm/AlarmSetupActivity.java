@@ -287,8 +287,8 @@ public class AlarmSetupActivity extends AppCompatActivity implements Toolbar.OnM
                     builder.show();
                     break;
 
-                } else if (bundle.containsKey("ck_contactUri")) {
-                    if (!bundle.getBoolean("ck_contactUri")) {
+                } else if (bundle.containsKey("ck_contactsUri")) {
+                    if (!bundle.getBoolean("ck_contactsUri")) {
                         builder.setMessage("정말 연락처를 선택하지 않으시겠습니까?");
                         builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                             @Override
@@ -301,24 +301,26 @@ public class AlarmSetupActivity extends AppCompatActivity implements Toolbar.OnM
                             public void onClick(DialogInterface dialog, int which) {
                                 Log.d(TAG, "onClick: AlertDialog 아니오 종료");
                             }
-                        }).setNeutralButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                        });
+                        builder.show();
+                        break;
+                    }
+                    if (!bundle.getBoolean("ck_split_ar")) {
+                        builder.setMessage("전화나 문자메시지를 설정하지 않았습니다.");
+                        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                Log.d(TAG, "onClick: AlertDialog 취소 종료");
+                                Log.d(TAG, "onClick: AlertDialog 종료");
                             }
                         });
                         builder.show();
                         break;
-                    } else if (bundle.getString("split_ar").equals("")) {
-                        builder.setMessage("전화나 문자메시지를 설정하지 않았습니다.");
-                        builder.show();
                     }
-                } else {
-                    save(bundle);
-                    break;
-
                 }
 
+                save(bundle);
+                finish();
+                break;
 
             default:
                 break;
