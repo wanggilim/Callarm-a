@@ -80,15 +80,6 @@ public class AlarmListActivity extends AppCompatActivity {
 
             // (4) Alarm 객체 기반 ArrayList 안으로, 선언하고 정의한 Alarm 객체를 삽입한다.
             alarms.add(alarm);
-
-            // 테스트 (5) Cursor 출력 후 테스트
-            if (contactsUri == null || contactsUri.equals("")) {
-                Log.d(TAG, "onCreate: 연락처 미선택");
-            } else {
-                Log.d(TAG, "onCreate: 연락처 존재");
-                creator.showResult(contactsUri);
-            }
-
         }
 
         recyclerView = findViewById(R.id.rv_alarm_list);
