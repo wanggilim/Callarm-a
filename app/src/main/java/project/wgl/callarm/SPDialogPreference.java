@@ -2,6 +2,8 @@ package project.wgl.callarm;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.os.Bundle;
 import android.preference.DialogPreference;
 import android.support.v7.widget.AppCompatSpinner;
 import android.text.Editable;
@@ -156,18 +158,63 @@ public class SPDialogPreference extends DialogPreference implements CompoundButt
         super.onPrepareDialogBuilder(builder);
     }
 
+    /**
+     * DialogPreference 에 내장되어있는 Dialog 버튼 이벤트 처리
+     * (전화 또는 문자메시지 미체크시 나오는 문구 띄우기 설계)
+     * @param state
+     */
+    @Override
+    protected void showDialog(Bundle state) {
+        super.showDialog(state);
+
+        final AlertDialog ad = (AlertDialog) getDialog();
+        ad.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!cb_sms.isChecked() && !cb_phone.isChecked()) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    /**
+                     * TODO
+                     * strings
+                     */
+                    builder.setMessage("전화나 문자메시지를 선택해주세요.");
+                    builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Log.d(TAG, "onClick: 닫기");
+                        }
+                    });
+                    builder.show();
+                } else if (cb_sms.isChecked() && et_sms.getText().length() == 0) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    /**
+                     * TODO
+                     * strings
+                     */
+                    builder.setMessage("문자메시지를 입력해주세요");
+                    builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Log.d(TAG, "onClick: 닫기");
+                        }
+                    });
+                    builder.show();
+                } else {
+                    ad.dismiss();
+                }
+            }
+        });
+    }
+
+
     @Override
     protected void onDialogClosed(boolean positiveResult) {
-        Log.d(TAG, "onDialogClosed: " + positiveResult);
 
         // 종료시 ViewGroup 생성, view 객체를 종료하고 IllegalStateException 방지한다
         final ViewGroup parent = (ViewGroup) view.getParent();
         parent.removeView(view);
 
         if (positiveResult) {
-
-            setPersistent(true);
-
             /**
              * 0) i_spin_select_no  (spinner implement)
              * 1) l_time            (spinner implement)
@@ -184,6 +231,8 @@ public class SPDialogPreference extends DialogPreference implements CompoundButt
             isSms = cb_sms.isChecked();
             isSmsAuto = cb_sms_auto.isChecked();
             s_save = et_sms.getText().toString();
+
+            setPersistent(true);
             persistString(i_spin_select_no
                     + ":" + l_time
                     + ":" + isPhone
