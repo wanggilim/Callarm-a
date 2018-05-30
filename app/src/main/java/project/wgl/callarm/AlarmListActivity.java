@@ -3,14 +3,19 @@ package project.wgl.callarm;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.RectF;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
 
 import java.util.ArrayList;
 
@@ -23,6 +28,9 @@ public class AlarmListActivity extends AppCompatActivity {
 
     private Context context;
     private RecyclerView recyclerView;
+    private AlarmListAdapter adapter;
+    private boolean backFromSwipe;
+
 
     public AlarmListActivity() {
     }
@@ -82,14 +90,87 @@ public class AlarmListActivity extends AppCompatActivity {
             alarms.add(alarm);
         }
 
+        adapter = new AlarmListAdapter(context, alarms);
+
         recyclerView = findViewById(R.id.rv_alarm_list);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
         recyclerView.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(new AlarmListAdapter(context, alarms));
+        recyclerView.setAdapter(adapter);
+        recyclerView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Log.d(TAG, "onTouch: " + event.getAction());
+                backFromSwipe
+                        = (event.getAction() == MotionEvent.ACTION_UP) ||
+                        (event.getAction() == MotionEvent.ACTION_CANCEL);
+                return false;
+            }
+        });
 
-        Log.d(TAG, "onCreate: 끝 " + alarms.size());
+
+        // 스와이프 컨트롤러 (왼->오 에디트, 오->왼 삭제)
+        ItemTouchHelper.SimpleCallback callback
+                = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                Log.d(TAG, "onMove: ");
+                return false;
+            }
+
+            @Override
+            public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                //Log.d(TAG, "onChildDraw: " + dX + ", " + dY + ", " + actionState + ", " + isCurrentlyActive);
+                RectF leftBtn = new RectF();
+
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+            }
+
+            @Override
+            public void onSelectedChanged(RecyclerView.ViewHolder viewHolder, int actionState) {
+                Log.d(TAG, "onSelectedChanged: ");
+                super.onSelectedChanged(viewHolder, actionState);
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getAdapterPosition();
+                switch (direction) {
+                    case ItemTouchHelper.LEFT:
+                        // 삭제 아이콘 등장
+
+                        // 삭제 버튼 누를시
+                        adapter.getItems().remove(position);
+                        adapter.notifyItemRemoved(position);
+                        break;
+                    case ItemTouchHelper.RIGHT:
+                        // 편집 아이콘 등장
+                        break;
+                    case ItemTouchHelper.UP:
+                        break;
+                    case ItemTouchHelper.DOWN:
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+
+            @Override
+            public int convertToAbsoluteDirection(int flags, int layoutDirection) {
+                if (backFromSwipe) {
+                    backFromSwipe = false;
+                    return 0;
+                }
+                return super.convertToAbsoluteDirection(flags, layoutDirection);
+            }
+        };
+
+        ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
+        touchHelper.attachToRecyclerView(recyclerView);
+        
         /**
          * TODO
          * 달력에서 등록 이벤트를 클릭시 RecyclerView 가 뜨고

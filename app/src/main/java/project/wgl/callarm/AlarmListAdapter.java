@@ -111,6 +111,10 @@ public class AlarmListAdapter extends RecyclerView.Adapter<AlarmListHolder> {
         return position;
     }
 
+    public ArrayList<Alarm> getItems() {
+        return alarms;
+    }
+
     public Alarm getItem(int position) {
         Log.d(TAG, "getItem: ");
         return alarms.get(position);
@@ -128,7 +132,7 @@ class AlarmListHolder extends RecyclerView.ViewHolder implements Switch.OnClickL
     Switch sw_cell_alarm;
     TextView tv_cell_time;
 
-    public AlarmListHolder(Context context, ViewGroup parent) {
+    public AlarmListHolder(final Context context, ViewGroup parent) {
         super(LayoutInflater.from(context).inflate(R.layout.cell_list_alarm, parent, false));
         Log.d(TAG, "AlarmListHolder: ");
 
