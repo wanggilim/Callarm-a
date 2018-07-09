@@ -5,9 +5,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.RectF;
 import android.os.Bundle;
+import android.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,6 +25,9 @@ import java.util.ArrayList;
 /**
  * 알람 설정 확인 리스트
  * Created by WGL on 2018. 1. 10..
+ *
+ * TODO
+ * Swipe 할 때 버튼 활성화
  */
 public class AlarmListActivity extends AppCompatActivity {
     private static final String TAG = "AlarmListActivity";
@@ -29,7 +35,7 @@ public class AlarmListActivity extends AppCompatActivity {
     private Context context;
     private RecyclerView recyclerView;
     private AlarmListAdapter adapter;
-    private boolean backFromSwipe;
+    private AlertDialog.Builder builder;
 
 
     public AlarmListActivity() {
@@ -43,6 +49,7 @@ public class AlarmListActivity extends AppCompatActivity {
 
         context = getBaseContext();
 
+        builder = new AlertDialog.Builder(this);
         DatabaseOpenHelper helper = new DatabaseOpenHelper(getBaseContext());
         SQLiteDatabase db = helper.getReadableDatabase();
         Cursor result = helper.read(db);
@@ -56,6 +63,7 @@ public class AlarmListActivity extends AppCompatActivity {
          *
          * (추후)
          * - 가공한 Alarm 서비스로 등록하기
+         * - 밑에 따라오는 AlarmItemCreator 클래스 내용들은 AlarmItemController 클래스와 결합되어야한다.
          */
         AlarmItemCreator creator = new AlarmItemCreator(context);
 
@@ -95,79 +103,14 @@ public class AlarmListActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.rv_alarm_list);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        recyclerView.setNestedScrollingEnabled(false);
         recyclerView.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
-        recyclerView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                Log.d(TAG, "onTouch: " + event.getAction());
-                backFromSwipe
-                        = (event.getAction() == MotionEvent.ACTION_UP) ||
-                        (event.getAction() == MotionEvent.ACTION_CANCEL);
-                return false;
-            }
-        });
-
 
         // 스와이프 컨트롤러 (왼->오 에디트, 오->왼 삭제)
-        ItemTouchHelper.SimpleCallback callback
-                = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-
-            @Override
-            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-                Log.d(TAG, "onMove: ");
-                return false;
-            }
-
-            @Override
-            public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
-                //Log.d(TAG, "onChildDraw: " + dX + ", " + dY + ", " + actionState + ", " + isCurrentlyActive);
-                RectF leftBtn = new RectF();
-
-                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-            }
-
-            @Override
-            public void onSelectedChanged(RecyclerView.ViewHolder viewHolder, int actionState) {
-                Log.d(TAG, "onSelectedChanged: ");
-                super.onSelectedChanged(viewHolder, actionState);
-            }
-
-            @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                int position = viewHolder.getAdapterPosition();
-                switch (direction) {
-                    case ItemTouchHelper.LEFT:
-                        // 삭제 아이콘 등장
-
-                        // 삭제 버튼 누를시
-                        adapter.getItems().remove(position);
-                        adapter.notifyItemRemoved(position);
-                        break;
-                    case ItemTouchHelper.RIGHT:
-                        // 편집 아이콘 등장
-                        break;
-                    case ItemTouchHelper.UP:
-                        break;
-                    case ItemTouchHelper.DOWN:
-                        break;
-
-                    default:
-                        break;
-                }
-            }
-
-            @Override
-            public int convertToAbsoluteDirection(int flags, int layoutDirection) {
-                if (backFromSwipe) {
-                    backFromSwipe = false;
-                    return 0;
-                }
-                return super.convertToAbsoluteDirection(flags, layoutDirection);
-            }
-        };
-
+        AlarmItemController controller = new AlarmItemController();
+        ItemTouchHelper.Callback callback = controller;
         ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
         touchHelper.attachToRecyclerView(recyclerView);
         
@@ -181,4 +124,5 @@ public class AlarmListActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
     }
+
 }

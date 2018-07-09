@@ -119,6 +119,12 @@ public class AlarmListAdapter extends RecyclerView.Adapter<AlarmListHolder> {
         Log.d(TAG, "getItem: ");
         return alarms.get(position);
     }
+
+
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+    }
 }
 
 
