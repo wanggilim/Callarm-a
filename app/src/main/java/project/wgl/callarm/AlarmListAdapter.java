@@ -2,9 +2,11 @@ package project.wgl.callarm;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -128,8 +130,10 @@ public class AlarmListAdapter extends RecyclerView.Adapter<AlarmListHolder> {
 }
 
 
-class AlarmListHolder extends RecyclerView.ViewHolder implements Switch.OnClickListener {
+class AlarmListHolder extends RecyclerView.ViewHolder implements Switch.OnClickListener, CardView.OnTouchListener {
     private final static String TAG = "AlarmListHolder";
+
+    CardView cv_list_alarm;
 
     ImageView iv_cell;
     TextView tv_cell_target;
@@ -141,6 +145,9 @@ class AlarmListHolder extends RecyclerView.ViewHolder implements Switch.OnClickL
     public AlarmListHolder(final Context context, ViewGroup parent) {
         super(LayoutInflater.from(context).inflate(R.layout.cell_list_alarm, parent, false));
         Log.d(TAG, "AlarmListHolder: ");
+
+        cv_list_alarm = itemView.findViewById(R.id.cv_list_alarm);
+        cv_list_alarm.setOnTouchListener(this);
 
         iv_cell = itemView.findViewById(R.id.iv_cell);
         tv_cell_target = itemView.findViewById(R.id.tv_cell_target);
@@ -167,5 +174,38 @@ class AlarmListHolder extends RecyclerView.ViewHolder implements Switch.OnClickL
                 break;
         }
 
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        /**
+         * MotionEvent.ACTION_DOWN = 0
+         * MotionEvent.ACTION_UP = 1
+         * MotionEvent.ACTION_MOVE = 2
+         * MotionEvent.ACTION_CANCEL = 3
+         */
+
+        if (event.getAction() == MotionEvent.ACTION_CANCEL || event.getAction() == MotionEvent.ACTION_DOWN) {
+            /**
+             * TODO
+             * 뗐을 때 거리 계산하여
+             * 카드뷰 고정시키고 버튼 나오기
+             */
+            Log.d(TAG, "onTouch: " + event.getAction() + ", " + cv_list_alarm.getX() + ", " + cv_list_alarm.getScrollX());
+
+
+        } else if (event.getAction() == MotionEvent.ACTION_UP) {
+            /**
+             * TODO
+             *      여기도!!!!!
+             * 뗐을 때 거리 계산하여
+             * 카드뷰 고정시키고 버튼 나오기
+             */
+            Log.d(TAG, "onTouch: ACTION_UP " + cv_list_alarm.getX() + ", " + cv_list_alarm.getScrollX());
+
+        } else {
+            Log.d(TAG, "onTouch: ACTION_DOWN " + cv_list_alarm.getX() + ", " + cv_list_alarm.getScrollX());
+        }
+        return false;
     }
 }

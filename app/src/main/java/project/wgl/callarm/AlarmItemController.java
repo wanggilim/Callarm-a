@@ -7,9 +7,11 @@ import android.graphics.RectF;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.LayoutDirection;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 
 enum ButtonState {
@@ -18,7 +20,7 @@ enum ButtonState {
     RIGHT_VISIBLE
 }
 
-public class AlarmItemController extends ItemTouchHelper.Callback implements RecyclerView.OnItemTouchListener {
+public class AlarmItemController extends ItemTouchHelper.Callback {
     private final static String TAG = "AlarmItemCallback";
 
     private ButtonState buttonShowState = ButtonState.GONE;
@@ -44,8 +46,6 @@ public class AlarmItemController extends ItemTouchHelper.Callback implements Rec
 
     @Override
     public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
-        setOnTouchListener(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-        addOnItemTouchListener(recyclerView);
 
         /**
          * @param actionState
@@ -62,7 +62,6 @@ public class AlarmItemController extends ItemTouchHelper.Callback implements Rec
         //CardView itemView2 = (CardView) viewHolder.itemView; // cardView
         View itemView = viewHolder.itemView; // cardView
 
-
         int width = itemView.getWidth();
         int height = itemView.getHeight();
         int left = itemView.getLeft();
@@ -73,200 +72,102 @@ public class AlarmItemController extends ItemTouchHelper.Callback implements Rec
         RectF btn = new RectF();
 
         // Swipe 하고 있든, 떼버리든 항상 그림 그려져있어야함.
-        if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) { // 1
-            setOnTouchListener(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-            // 버튼 그리기
-            if (dX > 0) {
-                // 왼쪽 그리기
-                paint(c, btn, PAINT_LEFT, left, top, left+(width/4), bottom);
-            } else if (dX < 0){
-                // 오른쪽 그리기
-                paint(c, btn, PAINT_RIGHT, right-(width/4), top, right, bottom);
-            }
+        // 버튼 그리기
+        if (dX > 0) {
+            // 왼쪽 그리기
+            paint(c, btn, PAINT_LEFT, left, top, left+(width/4), bottom);
+        } else if (dX < 0){
+            // 오른쪽 그리기
+            paint(c, btn, PAINT_RIGHT, right-(width/4), top, right, bottom);
         }
 
-//        if (isCurrentlyActive == false) {
-//                // 고정 가능 상태에서 놓으면 고정이 됨
-//                //CardView cardView = (CardView) viewHolder.itemView;
-//                //cardView.offsetLeftAndRight((int) BUTTON_WIDTH);
-//                //itemView.requestLayout();
-//
-//                /**
-//                 * @variable isCurrentlyActive
-//                 * True if this view is currently being controlled by the user
-//                 * or false it is simply animating back to its original state.
-//                 */
-//        }
+        if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) { // 1
+            //setOnTouchListener(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+            /**
+             * @variable isCurrentlyActive
+             * True if this view is currently being controlled by the user
+             * or false it is simply animating back to its original state.
+             */
 
 
+            swipeBack = false;
+            if (dX > 0 && dX > left+(width/4)) {
+                buttonShowState = ButtonState.LEFT_VISIBLE;
+                swipeBack = true;
+
+                // 고정 가능 상태에서 놓으면 고정이 됨
+                if (isCurrentlyActive == false) {
+                    itemView.setScrollX(-(width/4)); // 야매 = itemView.scrollTo(-(width/4), 0);
+                    itemView.setX(-(width/4));
+                    /**
+                     * TODO
+                     * - 고정된 상태에서 버튼 보이기
+                     * - 좌, 우 버튼 클릭할 때 다르게 적용하기
+                     */
+                    paint(c, btn, PAINT_LEFT, left, top, left+(width/4), bottom);
+                    //itemView.setX(-(width/4)); // 안됨.
+                    //recyclerView.smoothScrollBy(-(width/4), 0); // 안됨.
+                    setItemsClickable(recyclerView, true);
+                    //Log.d(TAG, "onChildDraw: dX = " + itemView.getX());
+                }
+            } else if (dX < 0 && Math.abs(dX) > width/4) { // dX > -(right-(width/4))
+                paint(c, btn, PAINT_RIGHT, right-(width/4), top, right, bottom);
+                buttonShowState = ButtonState.RIGHT_VISIBLE;
+                swipeBack = true;
+
+                // 고정 가능 상태에서 놓으면 고정이 됨
+                if (isCurrentlyActive == false) {
+                    itemView.setScrollX(width/4); // 야매
+                    itemView.setX(width/4);
+                    setItemsClickable(recyclerView, true);
+                }
+            } else {
+                buttonShowState = ButtonState.GONE;
+                /**
+                 * TODO
+                 * 고정된 상태에서 다시 땡기고 풀릴때 원복하기
+                 */
+//                if (isCurrentlyActive == false) {
+//                    itemView.setScrollX(0);
+//                    itemView.setX(0);
+//                    setItemsClickable(recyclerView,false);
+//                    swipeBack = false;
+//                }
+
+            }
+            Log.d(TAG, "onChildDraw: buttonShowState = " + buttonShowState + ", " +
+                    "isCurrentActive = "+ isCurrentlyActive + ", " +
+                    "swipeBack = " + swipeBack);
+        }
+
+        itemView.requestLayout();
         super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
     }
 
-
     @Override
     public int convertToAbsoluteDirection(int flags, int layoutDirection) {
-        //Log.d(TAG, "convertToAbsoluteDirection: " + flags + ", " + layoutDirection);
         if (swipeBack) {
             swipeBack = false;
             return 0;   // 결과적으로, 떼면 원래대로 돌아온다.
         }
+
         return super.convertToAbsoluteDirection(flags, layoutDirection);
     }
 
-    // 기타 이벤트(1) //////////////////////////////////////
-    private void setOnTouchListener(final Canvas c,
-                                    final RecyclerView recyclerView,
-                                    final RecyclerView.ViewHolder viewHolder,
-                                    final float dX, final float dY,
-                                    final int actionState, final boolean isCurrentlyActive) {
-        recyclerView.setOnTouchListener(new View.OnTouchListener() {
-            /**
-             * ACTION_DOWN = 0
-             * ACTION_UP = 1
-             * ACTION_MOVE = 2
-             * ACTION_CANCEL = 3
-             */
-
-            // 눌렀을 때 원래대로 돌아올 수 있다고 바뀐다.
-            View itemView = viewHolder.itemView; // cardView
-
-            int width = itemView.getWidth();
-            int height = itemView.getHeight();
-            int left = itemView.getLeft();
-            int right = itemView.getRight();
-            int top = itemView.getTop();
-            int bottom = itemView.getBottom();
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                swipeBack = (event.getAction() == MotionEvent.ACTION_CANCEL) ||
-                        (event.getAction() == MotionEvent.ACTION_UP);
-
-                if (swipeBack) {
-                    if (dX > 0 && dX > left+(width/4)) {
-                        buttonShowState = ButtonState.LEFT_VISIBLE;
-                        /**
-                         *  RIGHT_VISIBLE 만 뜨도록 구분하기
-                         */
-                    } else if (dX < 0 && dX > -(right-(left+(width/4)))) { // dX > -(right-(width/4))
-                        buttonShowState = ButtonState.RIGHT_VISIBLE;
-                    } else {
-                        buttonShowState = ButtonState.GONE;
-                    }
-                    Log.d(TAG, "onTouch: " + buttonShowState
-                            + " " + dX + " " + (-(right-(width/4))));
-
-                    if (buttonShowState != ButtonState.GONE) {
-                        setOnTouchDownListener(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-                        setItemsClickable(recyclerView, false);
-                    }
-                }
-                return false;
-            }
-        });
-    }
-
-    private void setOnTouchDownListener(final Canvas c,
-                                      final RecyclerView recyclerView,
-                                      final RecyclerView.ViewHolder viewHolder,
-                                      final float dX, final float dY,
-                                      final int actionState, final boolean isCurrentlyActive) {
-
-        recyclerView.setOnTouchListener(new View.OnTouchListener() {
-            /**
-             * ACTION_DOWN = 0
-             * ACTION_UP = 1
-             * ACTION_MOVE = 2
-             * ACTION_CANCEL = 3
-             */
-
-            // 눌렀을 때 원래대로 돌아올 수 있다고 바뀐다.
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    Log.d(TAG, "onTouch: setOnTouchListener");
-                    setOnTouchUpListener(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-                }
-                return false;
-            }
-        });
-    }
-
-
-    private void setOnTouchUpListener(final Canvas c,
-                                    final RecyclerView recyclerView,
-                                    final RecyclerView.ViewHolder viewHolder,
-                                    final float dX, final float dY,
-                                    final int actionState, final boolean isCurrentlyActive) {
-        recyclerView.setOnTouchListener(new View.OnTouchListener() {
-            /**
-             * ACTION_DOWN = 0
-             * ACTION_UP = 1
-             * ACTION_MOVE = 2
-             * ACTION_CANCEL = 3
-             */
-
-            // 눌렀을 때 원래대로 돌아올 수 있다고 바뀐다.
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                /**
-                 * 추정 TODO
-                 * 일정 수치 땡기면 야매로 View 위젯 만들어보기
-                 */
-                    Log.d(TAG, "onTouch: setOnTouchUpListener");
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-
-                    AlarmItemController.super.onChildDraw(c, recyclerView, viewHolder, 0f, dY, actionState, isCurrentlyActive);
-                    recyclerView.setOnTouchListener(new View.OnTouchListener() {
-                        @Override
-                        public boolean onTouch(View v, MotionEvent event) {
-                            return false;
-                        }
-                    });
-                    setItemsClickable(recyclerView, true);
-                    swipeBack = false;
-                    buttonShowState = ButtonState.GONE;
-                }
-                return false;
-            }
-        });
-
-    }
-
-
-    private void addOnItemTouchListener(final RecyclerView recyclerView) {
-        recyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
-            @Override
-            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-                return false;
-            }
-
-            @Override
-            public void onTouchEvent(RecyclerView rv, MotionEvent e) {
-                /**
-                 * ACTION_DOWN = 0
-                 * ACTION_UP = 1
-                 * ACTION_MOVE = 2
-                 * ACTION_CANCEL = 3
-                 */
-                Log.d(TAG, "onTouchEvent: " + e.getAction());
-            }
-
-            @Override
-            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-                Log.d(TAG, "onRequestDisallowInterceptTouchEvent: ");
-            }
-        });
-    }
-
-
-    private void setItemsClickable(RecyclerView recyclerView, boolean isClickable) {
+    private void setItemsClickable(final RecyclerView recyclerView, boolean isClickable) {
         for (int i = 0; i < recyclerView.getChildCount(); i++) {
             recyclerView.getChildAt(i).setClickable(isClickable);
+            recyclerView.getChildAt(i).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(recyclerView.getContext(), "눌렀습니다", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     }
 
 
-    // 기타 이벤트(2) //////////////////////////////////////
+    // 기타 이벤트(1) //////////////////////////////////////
     private final static int PAINT_LEFT = 0;
     private final static int PAINT_RIGHT = 1;
     private void paint(Canvas c,
@@ -317,22 +218,5 @@ public class AlarmItemController extends ItemTouchHelper.Callback implements Rec
                 text);
     }
 
-
-    @Override
-    public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-        Log.d(TAG, "onInterceptTouchEvent: ");
-        return false;
-    }
-
-    @Override
-    public void onTouchEvent(RecyclerView rv, MotionEvent e) {
-        Log.d(TAG, "onTouchEvent: ");
-
-    }
-
-    @Override
-    public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-        Log.d(TAG, "onRequestDisallowInterceptTouchEvent: ");
-    }
 }
 
