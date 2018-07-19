@@ -4,30 +4,24 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import android.support.v7.widget.CardView;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.LayoutDirection;
-import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Toast;
 
-
-enum ButtonState {
-    GONE,
-    LEFT_VISIBLE,
-    RIGHT_VISIBLE
-}
 
 public class AlarmItemController extends ItemTouchHelper.Callback {
     private final static String TAG = "AlarmItemCallback";
 
-    private ButtonState buttonShowState = ButtonState.GONE;
-    private boolean swipeBack = false;
+    private AlarmListAdapter adapter;
+    private Alarm alarm;
 
     private final static float BUTTON_WIDTH = 200;  // 수정해야됨.
     private final static float CORNERS = 16;
+
+    public AlarmItemController(AlarmListAdapter adapter) {
+        this.adapter = adapter;
+    }
 
     @Override
     public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
@@ -39,9 +33,36 @@ public class AlarmItemController extends ItemTouchHelper.Callback {
         return false;
     }
 
+
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+        View itemView = viewHolder.itemView;
+        final int position = viewHolder.getAdapterPosition();
 
+        if (direction == ItemTouchHelper.LEFT) {
+            // RTL
+            // (1) 백업하고
+            alarm = adapter.getItem(position);
+            adapter.removeItem(position);
+
+            // (2) 지우고
+            /**
+             * TODO
+             * strings
+             */
+            Snackbar snackbar = Snackbar.make(itemView, "삭제되었습니다.", Snackbar.LENGTH_LONG);
+            snackbar.setAction("Undo", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    adapter.undoItem(alarm, position);
+                }
+            });
+            snackbar.show();
+        } else {
+            // LTR
+
+
+        }
     }
 
     @Override
@@ -60,7 +81,8 @@ public class AlarmItemController extends ItemTouchHelper.Callback {
 //                );
         //CardView itemView = findViewById(R.id.cv_list_alarm); // cardView
         //CardView itemView2 = (CardView) viewHolder.itemView; // cardView
-        View itemView = viewHolder.itemView; // cardView
+        final View itemView = viewHolder.itemView; // cardView
+
 
         int width = itemView.getWidth();
         int height = itemView.getHeight();
@@ -71,101 +93,28 @@ public class AlarmItemController extends ItemTouchHelper.Callback {
 
         RectF btn = new RectF();
 
-        // Swipe 하고 있든, 떼버리든 항상 그림 그려져있어야함.
-        // 버튼 그리기
-        if (dX > 0) {
-            // 왼쪽 그리기
-            paint(c, btn, PAINT_LEFT, left, top, left+(width/4), bottom);
-        } else if (dX < 0){
-            // 오른쪽 그리기
-            paint(c, btn, PAINT_RIGHT, right-(width/4), top, right, bottom);
-        }
-
-        if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) { // 1
-            //setOnTouchListener(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-            /**
-             * @variable isCurrentlyActive
-             * True if this view is currently being controlled by the user
-             * or false it is simply animating back to its original state.
-             */
-
-
-            swipeBack = false;
-            if (dX > 0 && dX > left+(width/4)) {
-                buttonShowState = ButtonState.LEFT_VISIBLE;
-                swipeBack = true;
-
-                // 고정 가능 상태에서 놓으면 고정이 됨
-                if (isCurrentlyActive == false) {
-                    itemView.setScrollX(-(width/4)); // 야매 = itemView.scrollTo(-(width/4), 0);
-                    itemView.setX(-(width/4));
-                    /**
-                     * TODO
-                     * - 고정된 상태에서 버튼 보이기
-                     * - 좌, 우 버튼 클릭할 때 다르게 적용하기
-                     */
-                    paint(c, btn, PAINT_LEFT, left, top, left+(width/4), bottom);
-                    //itemView.setX(-(width/4)); // 안됨.
-                    //recyclerView.smoothScrollBy(-(width/4), 0); // 안됨.
-                    setItemsClickable(recyclerView, true);
-                    //Log.d(TAG, "onChildDraw: dX = " + itemView.getX());
-                }
-            } else if (dX < 0 && Math.abs(dX) > width/4) { // dX > -(right-(width/4))
-                paint(c, btn, PAINT_RIGHT, right-(width/4), top, right, bottom);
-                buttonShowState = ButtonState.RIGHT_VISIBLE;
-                swipeBack = true;
-
-                // 고정 가능 상태에서 놓으면 고정이 됨
-                if (isCurrentlyActive == false) {
-                    itemView.setScrollX(width/4); // 야매
-                    itemView.setX(width/4);
-                    setItemsClickable(recyclerView, true);
-                }
-            } else {
-                buttonShowState = ButtonState.GONE;
-                /**
-                 * TODO
-                 * 고정된 상태에서 다시 땡기고 풀릴때 원복하기
-                 */
-//                if (isCurrentlyActive == false) {
-//                    itemView.setScrollX(0);
-//                    itemView.setX(0);
-//                    setItemsClickable(recyclerView,false);
-//                    swipeBack = false;
-//                }
-
+        if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+            if (dX > 0) {
+                //paint(c, btn, PAINT_LEFT, left, top, left+(width/4), bottom);
+                paint(c, btn, PAINT_LEFT, left, top, dX, bottom);
+            } else if (dX < 0) {
+                //paint(c, btn, PAINT_RIGHT, right-(width/4), top, right, bottom);
+                paint(c, btn, PAINT_RIGHT, dX+right, top, right, bottom);
             }
-            Log.d(TAG, "onChildDraw: buttonShowState = " + buttonShowState + ", " +
-                    "isCurrentActive = "+ isCurrentlyActive + ", " +
-                    "swipeBack = " + swipeBack);
         }
 
-        itemView.requestLayout();
         super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
     }
 
     @Override
     public int convertToAbsoluteDirection(int flags, int layoutDirection) {
-        if (swipeBack) {
-            swipeBack = false;
-            return 0;   // 결과적으로, 떼면 원래대로 돌아온다.
-        }
+//        if (swipeBack) {
+//            swipeBack = false;
+//            return 0;   // 결과적으로, 떼면 원래대로 돌아온다.
+//        }
 
         return super.convertToAbsoluteDirection(flags, layoutDirection);
     }
-
-    private void setItemsClickable(final RecyclerView recyclerView, boolean isClickable) {
-        for (int i = 0; i < recyclerView.getChildCount(); i++) {
-            recyclerView.getChildAt(i).setClickable(isClickable);
-            recyclerView.getChildAt(i).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast.makeText(recyclerView.getContext(), "눌렀습니다", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
-    }
-
 
     // 기타 이벤트(1) //////////////////////////////////////
     private final static int PAINT_LEFT = 0;
@@ -189,33 +138,31 @@ public class AlarmItemController extends ItemTouchHelper.Callback {
 
         paint.setAntiAlias(true);
         text.setColor(Color.WHITE);
-        text.setTextSize(40f);
+        text.setTextSize(45f);
         text.setAntiAlias(true);
-        text.setTextAlign(Paint.Align.CENTER);
 
         rectF.set(left, top, right, bottom);
 
         String str_drawText = "";
+        text.setTextAlign(Paint.Align.CENTER);
         if (direction == PAINT_LEFT) {
-            paint.setColor(Color.BLUE);
+            paint.setColor(Color.rgb(63, 81, 181));
             /**
              * TODO
              * strings
              */
-            str_drawText = "EDIT";
-
-        } else {
+            str_drawText = "SWIPE TO EDIT";
+        } else if (direction == PAINT_RIGHT) {
             paint.setColor(Color.RED);
             /**
              * TODO
              * strings
              */
-            str_drawText = "DELETE";
+            str_drawText = "SWIPE TO DELETE";
         }
         c.drawRoundRect(rectF, CORNERS, CORNERS, paint);
         c.drawText(str_drawText,
-                rectF.centerX(), rectF.centerY(),
-                text);
+                rectF.centerX(), rectF.centerY(), text);
     }
 
 }

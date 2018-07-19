@@ -3,23 +3,15 @@ package project.wgl.callarm;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.RectF;
 import android.os.Bundle;
 import android.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
-
 import java.util.ArrayList;
 
 /**
@@ -109,7 +101,7 @@ public class AlarmListActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
 
         // 스와이프 컨트롤러 (왼->오 에디트, 오->왼 삭제)
-        AlarmItemController controller = new AlarmItemController();
+        AlarmItemController controller = new AlarmItemController(adapter);
         ItemTouchHelper.Callback callback = controller;
         ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
         touchHelper.attachToRecyclerView(recyclerView);
